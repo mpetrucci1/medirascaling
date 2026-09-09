@@ -1,0 +1,3794 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Medira Scaling · An AI operating system for marketing and outreach</title>
+<meta name="description" content="Medira is an AI operating system for marketing and outreach. It answers your email in your voice, runs your follow-up, and gives you your week back.">
+<meta name="theme-color" content="#05070B">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2305070B'/><path d='M8 22 L13 10 L16 17 L19 10 L24 22' stroke='%235AA9FF' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600&family=Inter:wght@400;500&family=IBM+Plex+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,300..600&display=swap" rel="stylesheet">
+
+<!-- ═══ HEADLINE FACE — P22 Mackinac Book ═══════════════════════
+     This is the real face from Marc's reference (motionsites.ai
+     "Build lasting relationships"), confirmed from that page's own
+     published build spec, which names it under "Fonts (exact)".
+
+     ⚠ THIS LINK IS A PREVIEW ONLY. SWAP BEFORE LAUNCH. ⚠
+     Mackinac is a commercial face from P22 Type Foundry. The host
+     below is a scraper that rehosts it and mislabels it CC BY 4.0;
+     it does not hold the rights to relicense it. Two problems for a
+     live commercial site: the use is unlicensed, and the host is a
+     third party who can vanish, silently dropping the headline to
+     the fallback with nobody watching.
+
+     The clean swap, and it is genuinely small: P22 Mackinac ships on
+     Adobe Fonts with unlimited web pageviews on any Creative Cloud
+     plan. Make a Web Project there, take the <link> it hands back,
+     and replace this one line. Nothing else in the page changes,
+     because the family name is the same.
+
+     Fallback stack is Fraunces, not Georgia, so if the host does die
+     the headline lands on something with a related colour and width
+     rather than a system serif. -->
+<link rel="stylesheet" href="https://db.onlinewebfonts.com/c/9d4d074c9335825a23cce178ee03b498?family=P22+Mackinac+W01+Book">
+
+<style>
+
+/* ============================================================================
+   scrollcraft.css: the taste floor
+   ----------------------------------------------------------------------------
+   Two layers, and the split matters:
+
+     TOKENS   what you override per brand. Colour roles, the type ramp, the
+              spacing scale, elevation, motion. A brand is ~12 values.
+     DEVICES  what the engine drives. Do not restyle these to taste; they are
+              the mechanism. Style your own markup instead.
+
+   Nothing here draws a "component". There are no card, badge, or pill classes,
+   because a stylesheet that ships those is how every page built on it ends up
+   with the same shapes. You get a floor and a vocabulary; the composition is
+   yours.
+   ========================================================================== */
+
+/* ---------------------------------------------------------------- tokens -- */
+:root {
+  /* --- colour roles. Override these six and the page is rebranded. -------- */
+  --sc-canvas:      #08090b;   /* the page ground. Drift interpolates this.   */
+  --sc-surface:     #101217;   /* anything raised off the ground             */
+  --sc-ink:         #f4f2ef;   /* primary text                               */
+  --sc-ink-soft:    #9a9ba1;   /* secondary text. Tinted, never flat gray.   */
+  --sc-accent:      #d8ff3e;   /* ONE accent. It owns a region, not confetti. */
+  --sc-accent-ink:  #08090b;   /* text that sits on the accent               */
+
+  --sc-hairline:    color-mix(in oklab, var(--sc-ink) 12%, transparent);
+  --sc-hairline-strong: color-mix(in oklab, var(--sc-ink) 22%, transparent);
+
+  /* --- type. Two families max. Display carries voice, text carries prose. - */
+  --sc-font-display: "Instrument Sans", "Geist", system-ui, sans-serif;
+  --sc-font-text:    "Geist", system-ui, sans-serif;
+  --sc-font-mono:    "Geist Mono", ui-monospace, monospace;
+
+  /* Fluid ramp. Tracking tightens as size grows because a face set at 6rem
+     with 0 tracking reads loose; this is optical correction, not decoration. */
+  --sc-t-xs:   clamp(0.75rem, 0.72rem + 0.15vw, 0.82rem);
+  --sc-t-sm:   clamp(0.875rem, 0.84rem + 0.18vw, 0.95rem);
+  --sc-t-base: clamp(1rem, 0.96rem + 0.22vw, 1.125rem);
+  --sc-t-lg:   clamp(1.2rem, 1.1rem + 0.5vw, 1.5rem);
+  --sc-t-xl:   clamp(1.6rem, 1.35rem + 1.2vw, 2.25rem);
+  --sc-t-2xl:  clamp(2.1rem, 1.6rem + 2.4vw, 3.4rem);
+  --sc-t-3xl:  clamp(2.8rem, 1.9rem + 4.2vw, 5rem);
+  --sc-t-4xl:  clamp(3.4rem, 1.9rem + 6.6vw, 7.5rem);
+
+  --sc-track-tight:  -0.035em;
+  --sc-track-snug:   -0.02em;
+  --sc-track-normal: -0.005em;
+  --sc-track-wide:    0.08em;
+
+  --sc-leading-none: 0.94;
+  --sc-leading-tight: 1.06;
+  --sc-leading-body: 1.62;
+
+  --sc-measure: 62ch;
+
+  /* --- space. 4px base: the useful middle steps an 8-only scale misses. --- */
+  --sc-1: 0.25rem;  --sc-2: 0.5rem;   --sc-3: 0.75rem;  --sc-4: 1rem;
+  --sc-5: 1.5rem;   --sc-6: 2rem;     --sc-7: 3rem;     --sc-8: 4rem;
+  --sc-9: 6rem;     --sc-10: 8rem;    --sc-11: 12rem;
+
+  /* Section rhythm is fluid so a phone doesn't inherit desktop air. */
+  --sc-section: clamp(4.5rem, 9vw, 11rem);
+  --sc-gutter:  clamp(1.25rem, 5vw, 5.5rem);
+  --sc-maxw:    82rem;
+
+  /* --- radius. Pick one scale for the page and hold it. ------------------- */
+  --sc-r-sm: 6px;  --sc-r-md: 12px;  --sc-r-lg: 20px;  --sc-r-pill: 999px;
+
+  /* --- elevation. Every shadow has an offset AND a soft blur, and is tinted
+         to the canvas hue. A zero-offset coloured halo is decoration, not
+         depth, so there isn't one here. ---------------------------------- */
+  --sc-shadow-color: 220 40% 2%;
+  --sc-e1: 0 1px 2px hsl(var(--sc-shadow-color) / 0.28),
+           0 2px 6px -1px hsl(var(--sc-shadow-color) / 0.20);
+  --sc-e2: 0 2px 4px hsl(var(--sc-shadow-color) / 0.24),
+           0 8px 18px -4px hsl(var(--sc-shadow-color) / 0.30);
+  --sc-e3: 0 4px 8px hsl(var(--sc-shadow-color) / 0.22),
+           0 18px 40px -8px hsl(var(--sc-shadow-color) / 0.38),
+           0 48px 90px -24px hsl(var(--sc-shadow-color) / 0.30);
+
+  /* Edge light: a 1px top highlight sells a raised surface better than any
+     amount of blur, because real raised things catch light on their lip. */
+  --sc-edge: inset 0 1px 0 color-mix(in oklab, var(--sc-ink) 10%, transparent);
+
+  /* --- motion. Built-in CSS easings are too weak for UI. ------------------ */
+  --sc-ease-out:    cubic-bezier(0.23, 1, 0.32, 1);
+  --sc-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --sc-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --sc-d-fast: 160ms;  --sc-d-base: 240ms;  --sc-d-slow: 420ms;
+
+  --sc-z-stage: 1; --sc-z-copy: 20; --sc-z-chrome: 60;
+}
+
+/* --------------------------------------------------------------- reset -- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  background: var(--sc-canvas);
+  color: var(--sc-ink);
+  font-family: var(--sc-font-text);
+  font-size: var(--sc-t-base);
+  line-height: var(--sc-leading-body);
+  letter-spacing: var(--sc-track-normal);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-synthesis-weight: none;
+  overflow-x: clip;
+}
+img, video, canvas, svg { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+
+/* ------------------------------------------------- the browser surfaces --
+   The parts you did not draw still carry the design. Selection, caret, focus
+   ring, scrollbar and tabular numerals all ship with defaults that belong to no
+   design system. Theming them is the cheapest signal that a page was built
+   rather than assembled, and it is the step that gets skipped most reliably. */
+::selection { background: var(--sc-accent); color: var(--sc-accent-ink); }
+:root { caret-color: var(--sc-accent); accent-color: var(--sc-accent); }
+:focus-visible {
+  outline: 2px solid var(--sc-accent);
+  outline-offset: 3px;
+  border-radius: var(--sc-r-sm);
+}
+:where(a) { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 0.22em; }
+@supports (scrollbar-color: auto) {
+  html { scrollbar-color: color-mix(in oklab, var(--sc-ink) 26%, transparent) transparent; scrollbar-width: thin; }
+}
+:where(table, .sc-nums, [data-sc-count]) { font-variant-numeric: tabular-nums; }
+
+/* ----------------------------------------------------------- typography -- */
+.sc-display {
+  font-family: var(--sc-font-display);
+  font-weight: 500;
+  line-height: var(--sc-leading-none);
+  letter-spacing: var(--sc-track-tight);
+  text-wrap: balance;
+  margin: 0;
+}
+.sc-display--xl { font-size: var(--sc-t-4xl); }
+.sc-display--lg { font-size: var(--sc-t-3xl); }
+.sc-display--md { font-size: var(--sc-t-2xl); letter-spacing: var(--sc-track-snug); }
+.sc-lede {
+  font-size: var(--sc-t-lg);
+  line-height: 1.44;
+  letter-spacing: var(--sc-track-snug);
+  color: var(--sc-ink);
+  max-width: 46ch;
+  text-wrap: pretty;
+  margin: 0;
+}
+.sc-body { max-width: var(--sc-measure); color: var(--sc-ink-soft); text-wrap: pretty; margin: 0; }
+.sc-label {
+  font-family: var(--sc-font-mono);
+  font-size: var(--sc-t-xs);
+  letter-spacing: var(--sc-track-wide);
+  text-transform: uppercase;
+  color: var(--sc-ink-soft);
+}
+
+/* ---------------------------------------------------------------- layout -- */
+.sc-wrap { width: 100%; max-width: var(--sc-maxw); margin-inline: auto; padding-inline: var(--sc-gutter); }
+.sc-section { padding-block: var(--sc-section); }
+/* More space above a heading than below it: the gap belongs to the boundary,
+   not to the pair. */
+.sc-stack > * + * { margin-top: var(--sc-4); }
+.sc-stack > :is(h1,h2,h3) { margin-top: var(--sc-7); }
+.sc-stack > :is(h1,h2,h3):first-child { margin-top: 0; }
+.sc-rule { height: 1px; border: 0; background: var(--sc-hairline); margin: 0; }
+
+/* =============================================================== DEVICES ==
+   Driven by the engine. Restyle your own markup, not these.                */
+
+.sc-act--pinned { position: relative; }
+.sc-stage {
+  position: sticky; top: 0;
+  height: 100vh; height: 100svh;
+  overflow: clip;
+  z-index: var(--sc-z-stage);
+}
+
+/* scrub / sequence media */
+.sc-stage :is(video[data-sc-scrub], canvas[data-sc-sequence], .sc-stage__poster) {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+video[data-sc-scrub] { opacity: 0; transition: opacity 380ms var(--sc-ease-out); }
+.sc-has-clip video[data-sc-scrub] { opacity: 1; }
+/* The poster is a live frame-holder, not a placeholder: it stays up until a
+   real video frame has painted, which is what stops the blank-stage flash. */
+.sc-stage__poster { z-index: 0; transition: opacity 380ms var(--sc-ease-out); }
+.sc-has-clip .sc-stage__poster { opacity: 0; }
+
+/* A scrim only where text sits. A full-frame darkening layer flattens the
+   image everywhere to fix contrast in one corner. */
+.sc-scrim {
+  position: absolute; inset: 0; pointer-events: none; z-index: 1;
+  background: linear-gradient(
+    var(--sc-scrim-angle, 180deg),
+    color-mix(in oklab, var(--sc-canvas) var(--sc-scrim-a, 78%), transparent) 0%,
+    color-mix(in oklab, var(--sc-canvas) 30%, transparent) 42%,
+    transparent 68%);
+}
+/* Point the scrim at the copy. A scrim gradient that darkens the top while the
+   copy sits at the bottom fixes contrast nowhere and flattens the image
+   everywhere, which is the most common way text-over-video goes wrong. */
+.sc-scrim--bottom { --sc-scrim-angle: 0deg; }
+.sc-scrim--left   { --sc-scrim-angle: 90deg; }
+.sc-scrim--right  { --sc-scrim-angle: 270deg; }
+
+/* Corner scrims, for copy anchored to a corner. An edge gradient has to darken
+   a whole band across the frame to cover one corner; a corner gradient puts the
+   density where the text is and leaves the rest of the image alone. Pair with
+   .sc-copy--lead / .sc-copy--trail. */
+.sc-scrim--lead {
+  background: linear-gradient(to top right,
+    color-mix(in oklab, var(--sc-canvas) 94%, transparent) 0%,
+    color-mix(in oklab, var(--sc-canvas) 72%, transparent) 30%,
+    color-mix(in oklab, var(--sc-canvas) 30%, transparent) 52%,
+    transparent 72%);
+}
+.sc-scrim--trail {
+  background: linear-gradient(to top left,
+    color-mix(in oklab, var(--sc-canvas) 94%, transparent) 0%,
+    color-mix(in oklab, var(--sc-canvas) 72%, transparent) 30%,
+    color-mix(in oklab, var(--sc-canvas) 30%, transparent) 52%,
+    transparent 72%);
+}
+/* A band across the bottom, for copy that spans the full width of the frame.
+   That is what both corner anchors become below 860px, and it is also the right
+   shape whenever the copy block is wider than a corner. */
+.sc-scrim--band {
+  background: linear-gradient(to top,
+    color-mix(in oklab, var(--sc-canvas) 94%, transparent) 0%,
+    color-mix(in oklab, var(--sc-canvas) 74%, transparent) 22%,
+    color-mix(in oklab, var(--sc-canvas) 30%, transparent) 42%,
+    transparent 58%);
+}
+.sc-scrim--vignette {
+  background: radial-gradient(120% 90% at 50% 45%, transparent 40%,
+              color-mix(in oklab, var(--sc-canvas) 70%, transparent) 100%);
+}
+
+/* copy over a stage.
+   max-width is in rem, never ch. A `ch` on this container resolves against the
+   CONTAINER's font-size (body size), not the display size of the heading inside
+   it, so `max-width: 20ch` here silently produces a ~180px column and wraps a
+   hero headline to six lines. Set a ch measure on the text element itself. */
+.sc-copy {
+  position: absolute; z-index: var(--sc-z-copy);
+  inset-inline: var(--sc-gutter);
+  max-width: min(46rem, 76vw);
+  will-change: opacity, transform;
+}
+.sc-copy--lead   { left: var(--sc-gutter); bottom: clamp(3rem, 12vh, 9rem); }
+/* inset-inline FIRST. It is the shorthand for left+right, so declaring it after
+   `left: 50%` resets left to auto and the block drifts off the left edge. */
+.sc-copy--center { inset-inline: auto; left: 50%; top: 50%; translate: -50% -50%; text-align: center; }
+.sc-copy--trail  { inset-inline: auto; right: var(--sc-gutter); bottom: clamp(3rem, 12vh, 9rem); text-align: right; }
+
+/* cue defaults: the engine writes opacity/transform inline, these are the
+   pre-paint state so nothing flashes before the first read() */
+[data-sc-cue] { opacity: 0; will-change: opacity, transform; }
+.sc-ready [data-sc-cue] { transition: none; }
+
+/* kinetic split */
+.sc-split { display: inline-block; overflow: hidden; vertical-align: top; }
+/* Descenders live below the baseline; a line mask clipped to the line box eats
+   the tails off g, y, p, j. The padding buys them room back. */
+.sc-split--line { display: block; padding-bottom: 0.14em; margin-bottom: -0.14em; }
+.sc-split__i { display: inline-block; will-change: transform, opacity; }
+.sc-is-split { opacity: 1 !important; }
+
+/* horizontal rail */
+[data-sc-pan] { display: flex; will-change: transform; }
+
+/* reveal + parallax */
+[data-sc-reveal] { will-change: clip-path; }
+[data-sc-parallax] { will-change: transform; }
+
+/* flow reveal (fires once) */
+[data-sc-in], [data-sc-stagger] > * {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  transition: opacity 620ms var(--sc-ease-out), transform 620ms var(--sc-ease-out);
+}
+[data-sc-in].sc-in, [data-sc-stagger] > .sc-in { opacity: 1; transform: none; }
+
+/* pointer devices */
+[data-sc-tilt] { transform-style: preserve-3d; will-change: transform; }
+[data-sc-magnet] { will-change: transform; }
+/* isolation always; position only if nothing more specific already set it.
+   Written with :where() (zero specificity) on purpose: a plain `position:
+   relative` here has the same weight as `.sc-stage` and, being later in the
+   file, silently wins. A stage carrying both attributes then stops being
+   sticky and the whole act scrolls away instead of pinning. */
+[data-sc-spotlight] { isolation: isolate; }
+:where([data-sc-spotlight]) { position: relative; }
+[data-sc-spotlight]::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 2;
+  background: radial-gradient(
+    28rem 28rem at calc(var(--sc-mx, 0.5) * 100%) calc(var(--sc-my, 0.5) * 100%),
+    color-mix(in oklab, var(--sc-accent) 16%, transparent), transparent 70%);
+  opacity: 0; transition: opacity var(--sc-d-slow) var(--sc-ease-out);
+}
+[data-sc-spotlight]:hover::after { opacity: 1; }
+
+/* =========================================================== WORLDFLIGHT ==
+   One fixed stage for the whole page. The only thing in document flow is the
+   spacer, and it is empty. If you find yourself adding a section here, you want
+   act mode instead: the moment a real block scrolls past the fixed stage, the
+   page has a seam again and the whole point is gone.                        */
+
+[data-sc-mode="worldflight"] { position: relative; }
+
+.sc-world {
+  position: fixed; inset: 0;
+  overflow: clip;
+  z-index: var(--sc-z-stage);
+  background: var(--sc-canvas);
+}
+
+/* Every leg is mounted for the life of the page and stacked in the same box.
+   The engine owns opacity, visibility and z-index here; do not set them. */
+.sc-world__seg {
+  position: absolute; inset: 0;
+  opacity: 0;
+  will-change: opacity;
+}
+.sc-world__seg > :is(video, img, canvas) {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+/* The poster is the frame-holder AND the first camera move: the engine pushes
+   it in slowly until a real decoded frame is available to replace it. */
+.sc-world__poster {
+  z-index: 0;
+  transform-origin: 50% 50%;
+  transition: opacity 420ms var(--sc-ease-out);
+}
+.sc-world__seg > video { z-index: 1; }
+.sc-world__seg.sc-has-clip .sc-world__poster { opacity: 0; }
+/* The act stylesheet lights a clip through its ancestor act. A worldflight leg
+   has no act, so match the class the engine also writes on the clip itself. */
+video[data-sc-scrub].sc-has-clip { opacity: 1; }
+
+/* The copy layer is fixed too, and inert by default: the engine hands
+   pointer-events back to a block only while it is actually legible. */
+.sc-world__copy {
+  position: fixed; inset: 0;
+  z-index: var(--sc-z-copy);
+  pointer-events: none;
+}
+.sc-world__scrim { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+[data-sc-copy] {
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+.sc-ready [data-sc-copy] { transition: none; }
+
+/* The track. Empty on purpose. */
+.sc-world__spacer { pointer-events: none; }
+
+/* scroll progress */
+[data-sc-progress] {
+  position: fixed; inset: 0 0 auto 0; height: 2px; z-index: var(--sc-z-chrome);
+  background: var(--sc-accent); transform-origin: 0 50%; transform: scaleX(0);
+  will-change: transform;
+}
+
+/* ----------------------------------------------------------- atmosphere --
+   Depth is not only shadow. Grain keeps a flat dark ground from banding, and
+   it is the difference between "a dark page" and "a lit room". */
+.sc-grain { position: fixed; inset: 0; pointer-events: none; z-index: 3; opacity: 0.045; }
+.sc-grain::before {
+  content: ""; position: absolute; inset: -50%;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/></filter><rect width='140' height='140' filter='url(%23n)'/></svg>");
+}
+
+/* -------------------------------------------------------- reduced motion -- */
+@media (prefers-reduced-motion: reduce) {
+  /* Fewer and gentler, not zero. Opacity still carries the reveal so the page
+     is comprehensible; every position change is dropped. */
+  [data-sc-in], [data-sc-stagger] > * { transform: none; transition-duration: 220ms; }
+  [data-sc-parallax], [data-sc-pan], .sc-split__i { transform: none !important; }
+  /* A wipe is a position change too. Show reveal content settled. */
+  [data-sc-reveal] { clip-path: none !important; }
+  /* A rail's transform IS its navigation, not decoration. Zeroing it the way
+     parallax and kinetic type are zeroed parks the act on its first screenful
+     and makes everything past the fold unreachable: a device degrading into
+     missing content. Hand the travel back to the reader as an ordinary scroll
+     region instead, so the same items are all still gettable without motion.
+     A build that would rather re-lay the rail out as a grid can still do that;
+     this is the floor, not the ceiling. */
+  [data-sc-act="pan"] .sc-stage,
+  [data-sc-act="pan"] [data-sc-stage] {
+    overflow-x: auto; overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+  }
+  [data-sc-pan] > * { scroll-snap-align: center; }
+  [data-sc-spotlight]::after { display: none; }
+  /* A worldflight keeps its whole story here. No clip is ever fetched, so the
+     posters are the film, and they cross-dissolve through exactly the same
+     seams at exactly the same scroll positions. The push-in and the copy drift
+     are the only things that go. */
+  .sc-world__poster, [data-sc-copy] { transform: none !important; }
+}
+
+/* --------------------------------------------------------------- mobile -- */
+@media (max-width: 860px) {
+  .sc-copy { inset-inline: var(--sc-gutter); max-width: none; }
+  .sc-copy--trail { text-align: left; }
+  .sc-stage { height: 100svh; }
+  /* .sc-copy--trail re-anchors to the left and spans the full width here, so a
+     bottom-RIGHT corner gradient darkens the one corner the copy just left and
+     guarantees a contrast failure over any bright clip. Point the density at
+     the copy: the same band .sc-scrim--band paints. */
+  .sc-scrim--trail {
+    background: linear-gradient(to top,
+      color-mix(in oklab, var(--sc-canvas) 94%, transparent) 0%,
+      color-mix(in oklab, var(--sc-canvas) 74%, transparent) 22%,
+      color-mix(in oklab, var(--sc-canvas) 30%, transparent) 42%,
+      transparent 58%);
+  }
+}
+
+
+</style>
+
+<style>
+/* ══════════════════════════════════════════════════════════════
+   MEDIRA · page styles
+   Built on the Saffron system: near-black ground, a real lit
+   surface behind everything, dense sharp chrome on top.
+   ══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Ground. Warm near-black, not blue-black. */
+  --sc-canvas:     #05070B;
+  --sc-surface:    #0C1018;
+  --sc-ink:        #E9EEF5;
+  --sc-ink-soft:   #A9B4C2;
+  /* The light. Amber, and it behaves like light, never like
+     flat gold text on a flat ground. */
+  --sc-accent:     #7CBBFF;
+  --sc-accent-ink: #05070B;
+
+  --md-violet:     #4FD8E8;
+  --md-hair:       rgba(233, 238, 245, 0.10);
+  --md-hair-soft:  rgba(233, 238, 245, 0.06);
+  --md-panel:      rgba(233, 238, 245, 0.026);
+
+  --sc-font-display: "Manrope", -apple-system, system-ui, sans-serif;
+  --sc-font-text:    "Inter", -apple-system, system-ui, sans-serif;
+  --md-font-mono:    "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
+  --md-font-script:  "P22 Mackinac W01 Book", "Fraunces", Georgia, serif;
+
+  --md-wrap: 1280px;
+  --md-gut:  clamp(1.25rem, 4vw, 3.5rem);
+  --md-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* `clip`, never `hidden`. Both stop a decorative pseudo-element from
+   widening the document, but `hidden` also turns the element into a
+   scroll container, and a scroll container between a sticky element and
+   the viewport silently cancels the stickiness — the pinned act keeps
+   `position: sticky` in the computed styles and scrolls away anyway.
+   `clip` clips without becoming a scroll container, so the guard holds
+   and every pin still pins. */
+html { background: var(--sc-canvas); overflow-x: clip; }
+body {
+  overflow-x: clip;
+  background: var(--sc-canvas);
+  color: var(--sc-ink);
+  font-family: var(--sc-font-text);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── The lit surface ──────────────────────────────────────────
+   One fixed canvas behind the whole document. Its opacity is
+   driven from scroll so the middle of the page reads clean and
+   sharp, and the two ends carry the atmosphere. */
+#md-gl {
+  position: fixed; inset: 0;
+  width: 100%; height: 100%;
+  display: block;
+  z-index: 0;
+  opacity: var(--md-gl-o, 1);
+  transition: opacity 240ms linear;
+  pointer-events: none;
+}
+#md-gl-fallback {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(120% 90% at 22% 18%, rgba(90,169,255,0.20), transparent 58%),
+    radial-gradient(90% 80% at 82% 72%, rgba(79,216,232,0.14), transparent 60%),
+    var(--sc-canvas);
+  opacity: var(--md-gl-o, 1);
+  display: none;
+}
+body[data-nogl] #md-gl-fallback { display: block; }
+
+/* Everything readable sits above the surface. */
+.md-shell { position: relative; z-index: 2; }
+
+/* ── Type primitives ────────────────────────────────────────── */
+.md-label {
+  font-family: var(--md-font-mono);
+  font-size: 0.688rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sc-accent);
+}
+.md-label--mute { color: var(--sc-ink-soft); }
+
+.md-h1, .md-h2, .md-h3 {
+  font-family: var(--sc-font-display);
+  font-weight: 200;
+  letter-spacing: -0.028em;
+  line-height: 1.02;
+  margin: 0;
+}
+.md-h1 {
+  /* One line at every width, so the size is driven by how much
+     room the line needs, not by a taste-picked scale. A script
+     face runs narrow per glyph, so it can afford to be larger. */
+  font-family: var(--md-font-script);
+  font-optical-sizing: auto;
+  font-size: clamp(2.5rem, 6vw, 5.1rem);
+  /* Mackinac Book is a static face at 400. Asking for anything
+     else makes the browser synthesise a fake weight. */
+  font-weight: 400;
+  /* The reference sets Tailwind's tracking-tighter and leading-1.1;
+     these are those two values, so the setting matches it exactly. */
+  letter-spacing: -0.05em;
+  line-height: 1.1;
+  max-width: 100%;
+  /* Descenders and swashes sit well outside the line box. */
+  padding: 0.06em 0.04em 0.14em;
+  /* Written on, left to right. Defaults to fully drawn so the
+     headline is never missing when JS does not run. */
+  -webkit-mask-image: linear-gradient(90deg, #000 0 calc(var(--md-write, 1) * 100%), transparent calc(var(--md-write, 1) * 100% + 5%));
+  mask-image: linear-gradient(90deg, #000 0 calc(var(--md-write, 1) * 100%), transparent calc(var(--md-write, 1) * 100% + 5%));
+}
+/* Tracking follows size. Large type reads too loose at a fixed value and
+   wants pulling in; smaller type wants it eased back toward zero. One
+   letter-spacing for every heading is wrong at one end or the other. */
+.md-h2 { font-size: clamp(1.9rem, 4.2vw, 3.4rem); line-height: 1.08; letter-spacing: -0.032em; }
+.md-h3 { font-size: clamp(1.25rem, 2.1vw, 1.7rem); font-weight: 300; line-height: 1.2; letter-spacing: -0.014em; }
+
+.md-body { color: var(--sc-ink-soft); font-size: clamp(0.95rem, 1.05vw, 1.06rem); margin: 0; letter-spacing: 0.003em; }
+.md-body strong, .md-body em { color: var(--sc-ink); font-style: normal; font-weight: 500; }
+
+.md-wrap { width: 100%; max-width: var(--md-wrap); margin-inline: auto; padding-inline: var(--md-gut); }
+.md-rule { height: 1px; background: var(--md-hair); border: 0; margin: 0; }
+
+/* ── Nav ────────────────────────────────────────────────────── */
+.md-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 60;
+  display: flex; align-items: center; gap: 1.5rem;
+  padding: 0.9rem var(--md-gut);
+  background: rgba(5, 7, 11, 0.55);
+  backdrop-filter: blur(12px) saturate(1.15);
+  -webkit-backdrop-filter: blur(12px) saturate(1.15);
+  border-bottom: 1px solid transparent;
+  transition: background 320ms var(--md-ease), border-color 320ms var(--md-ease);
+}
+.md-nav[data-stuck] {
+  background: rgba(5, 7, 11, 0.72);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  border-bottom-color: transparent;
+}
+/* Apple: a scroll edge effect, not a 1px divider. Content fades into the
+   floating chrome instead of being cut off by a line under it. */
+.md-nav::after {
+  content: ""; position: absolute; left: 0; right: 0; top: 100%;
+  height: 22px; pointer-events: none;
+  opacity: 0; transition: opacity 320ms var(--md-ease);
+  background: linear-gradient(180deg, rgba(5, 7, 11, 0.55), transparent);
+}
+.md-nav[data-stuck]::after { opacity: 1; }
+/* Mark and wordmark side by side, both drawn from the brand file rather
+   than set in a text face, so the nav shows the real logo. Each is sized
+   by height and lets its own width follow, because they have different
+   aspect ratios; a shared square would squash the wordmark. */
+.md-nav__mark { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; color: var(--sc-ink); }
+.md-nav__mark svg { display: block; width: auto; }
+.md-nav__glyph { height: 22px; }
+/* The wordmark's cap sits lower than the mark's, so a hair of optical
+   lift keeps the two reading level rather than measured level. */
+.md-nav__word { height: 15px; position: relative; top: 1px; }
+.md-nav__links { display: flex; gap: 1.65rem; margin-left: auto; }
+.md-nav__links a {
+  font-family: var(--md-font-mono); font-size: 0.688rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--sc-ink-soft); text-decoration: none;
+  transition: color 200ms;
+}
+.md-nav__links a:hover, .md-nav__links a:focus-visible { color: var(--sc-ink); }
+
+/* ── Pill button ────────────────────────────────────────────── */
+.md-pill {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.6rem 1.15rem;
+  border-radius: 999px;
+  /* Dark glass, straight off the component Marc sent. That one is a
+     near-black face at 80% over a blur, white label, and the only bright
+     thing on it is a 1px ring of light going round the edge. Its indigo
+     bloom is swapped for this page's blue so the button belongs here.
+
+     The face is translucent on purpose: the page moves behind it, which
+     is what separates glass from paint. Matte, not shiny, so no specular
+     highlight sits across the face and the ring stays the only lit part.
+
+     What pays for a dark button on a dark page is the ring plus the
+     bloom under it. Without both it disappears, so neither is optional. */
+  background: rgba(12, 15, 23, 0.72);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  backdrop-filter: blur(10px) saturate(140%);
+  color: var(--sc-ink);
+  font-family: var(--sc-font-text);
+  font-size: 0.875rem; font-weight: 500;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: transform 260ms var(--md-ease), background 240ms, color 240ms;
+}
+/* The CTA: matte, lifted, with one slow light travelling the rim.
+   Ported in spirit from the 21st.dev glassmorphism CTA Marc sent, with
+   two deliberate departures. That component is a dark glass pill; this
+   one stays light, because it is the single conversion element on a dark
+   page and its contrast has been measured repeatedly — turning it to
+   glass would quietly demote it. And its shimmer is a bright white sweep
+   across the face; here the light stays on the 1px rim only, at low
+   alpha, so the button reads as lifted rather than glossy.
+
+   The rim is a conic gradient masked to the border box. The angle is a
+   registered custom property so it can actually animate; where that is
+   unsupported the rim simply sits still, which still looks intentional. */
+@property --md-ang { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+
+.md-pill {
+  position: relative; overflow: hidden;
+  /* Depth, not gloss: a real cast shadow for separation, a hairline to
+     catch the light, and a wide low-alpha accent bloom underneath. */
+  /* The last shadow is a pool of dark, not a shadow. The closing CTA
+     already looked right because it sits on plain near-black; the hero
+     one sits on the bright plasma, which swallowed both the cast shadow
+     and the rim. This darkens the ground immediately around every
+     button so all of them read the way that one did. It is
+     self-limiting: over near-black it is invisible, over the lit
+     surface it does the work. */
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.55),
+    0 1px 0 rgba(255, 255, 255, 0.16) inset,
+    0 8px 38px -6px rgba(124, 187, 255, 0.30),
+    0 0 34px 26px rgba(5, 7, 11, 0.82),
+    0 0 76px 44px rgba(5, 7, 11, 0.55);
+  transition: transform 260ms var(--md-ease), background 240ms, color 240ms,
+              box-shadow 260ms var(--md-ease);
+}
+.md-pill::before {
+  content: ""; position: absolute; inset: 0; z-index: 2;
+  border-radius: inherit; padding: 1px; pointer-events: none;
+  background: conic-gradient(from var(--md-ang),
+    rgba(233, 238, 245, 0.20) 0deg,
+    rgba(124, 187, 255, 0.95) 30deg,
+    rgba(255, 255, 255, 1) 58deg,
+    rgba(79, 216, 232, 0.8) 88deg,
+    rgba(233, 238, 245, 0.20) 140deg,
+    rgba(233, 238, 245, 0.20) 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: md-rim 5s linear infinite;
+  opacity: 1;
+}
+@keyframes md-rim { to { --md-ang: 360deg; } }
+
+
+.md-pill::after {
+  content: ""; position: absolute; top: 0; bottom: 0; left: -50%; width: 40%;
+  transform: skewX(-18deg); pointer-events: none;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.13), transparent);
+  transition: left 640ms var(--md-ease);
+}
+.md-pill:hover::after, .md-pill:focus-visible::after { left: 120%; }
+.md-pill:hover, .md-pill:focus-visible {
+  transform: translateY(-2px);
+  background: rgba(22, 27, 38, 0.80);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.6),
+    0 1px 0 rgba(255, 255, 255, 0.22) inset,
+    0 10px 48px -4px rgba(124, 187, 255, 0.45),
+    0 0 38px 28px rgba(5, 7, 11, 0.86),
+    0 0 84px 48px rgba(5, 7, 11, 0.6);
+}
+.md-pill:hover::before, .md-pill:focus-visible::before { opacity: 1; }
+
+/* Apple: feedback on pointer-down, never on release. The press has to
+   land before the click does or the button feels dead for a beat.
+
+   Declared after the hover rules on purpose: same specificity, so the
+   later one wins, and with :active first a pressed button just showed
+   its hover lift and never acknowledged the press. */
+.md-pill:active {
+  transform: translateY(0) scale(0.97);
+  transition: transform 90ms ease-out;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.55),
+    0 1px 0 rgba(255, 255, 255, 0.12) inset,
+    0 4px 22px -6px rgba(124, 187, 255, 0.34),
+    0 0 30px 22px rgba(5, 7, 11, 0.82),
+    0 0 68px 40px rgba(5, 7, 11, 0.55);
+}
+.md-pill svg { width: 13px; height: 13px; }
+/* The nav bar is already a translucent dark material, and Apple is firm
+   that you never stack one translucent surface on another: a dark glass
+   chip on a dark glass bar is a chip you cannot see. So in the nav the
+   same face goes opaque and lifts a few points above the bar, which is
+   what gives it an edge. The ring is untouched, so it still reads as the
+   same button. It also stops the browser re-blurring a blurred bar on
+   every scroll frame. */
+.md-nav .md-pill {
+  padding: 0.45rem 0.95rem; font-size: 0.8rem; margin-left: 1.5rem;
+  background: #171D28;
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+}
+.md-nav .md-pill:hover, .md-nav .md-pill:focus-visible { background: #212938; }
+
+/* ── The word that changes ──────────────────────────────────
+   Its own line under the lead, so nothing has to be measured and
+   the rest of the headline never shifts. Inactive words are
+   already at zero opacity, so nothing needs clipping and no
+   descender gets cut. */
+.md-rot { position: relative; display: block; height: 1.1em; }
+.md-rot em {
+  /* Pinned to both edges rather than just the left, so each word centres
+     itself in the slot. Anchoring at left:0 alone left them all ragged
+     against the left edge under a centred headline. */
+  position: absolute; left: 0; right: 0; top: 0; text-align: center;
+  /* Not italic. The Mackinac web package is the Book roman only, so
+     asking for italic makes the browser slant the roman itself, and
+     a synthesised italic on a display line looks exactly as cheap as
+     it is. The reference headline is upright too; the accent colour
+     already does the work of setting this word apart. */
+  font-style: normal; white-space: nowrap;
+  color: var(--sc-accent);
+  opacity: 0; transform: translateY(0.9em);
+  transition: opacity 240ms var(--md-ease), transform 660ms var(--md-ease);
+  will-change: transform, opacity;
+}
+.md-rot em[data-st="past"] { transform: translateY(-0.9em); }
+.md-rot em[data-st="on"] { opacity: 1; transform: translateY(0); }
+/* Before JS runs, the first word simply reads. */
+/* Before JS runs, the first word simply reads. The other two are taken
+   out of flow entirely, not merely faded: left in flow at zero opacity
+   they still occupy their own width, which pushes the one visible word
+   off centre under a centred headline. */
+.md-rot:not([data-ready]) { height: auto; }
+.md-rot:not([data-ready]) em { position: static; display: none; transform: none; }
+.md-rot:not([data-ready]) em:first-child { display: inline; opacity: 1; }
+.md-h1__lead { display: block; }
+
+/* ── Hero: two columns ──────────────────────────────────────── */
+.md-hero {
+  position: relative;
+  min-height: 86svh;
+  display: grid;
+  align-items: center;
+  padding-top: 3.6rem;
+  isolation: isolate;
+}
+.md-hero__grid {
+  display: grid;
+  place-items: center;
+  width: 100%; max-width: var(--md-wrap);
+  margin-inline: auto;
+  padding: clamp(2rem, 6vh, 4rem) var(--md-gut);
+}
+.md-hero__copy { position: relative; display: grid; justify-items: center; text-align: center; max-width: 46rem; }
+/* A scrim only where the copy sits, never across the frame. */
+.md-hero__copy::before {
+  content: ""; position: absolute; inset: -22% -30%;
+  z-index: -1; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(5, 7, 11, 0.92) 0%, rgba(5, 7, 11, 0.58) 44%, transparent 100%);
+}
+
+.md-hero__line {
+  display: inline-flex; align-items: center; gap: 0.55rem;
+  margin: 0 0 clamp(1.1rem, 2.8vh, 1.9rem);
+  padding: 0.44rem 1.05rem 0.44rem 0.85rem;
+  border: 1px solid var(--md-hair);
+  border-radius: 999px;
+  background: rgba(5, 7, 11, 0.46);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: var(--sc-ink-soft);
+  text-align: center;
+  max-width: min(30rem, 92vw);
+}
+.md-hero__line i {
+  flex: none; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--sc-accent);
+  box-shadow: 0 0 8px 1px rgba(124, 187, 255, 0.75);
+}
+.md-hero__cta { margin-top: clamp(1.4rem, 3.4vh, 2.2rem); }
+.md-hero__note {
+  margin: clamp(1rem, 2.6vh, 1.6rem) 0 0;
+  max-width: 34rem;
+  font-size: clamp(0.9375rem, 1.15vw, 1.0625rem);
+  line-height: 1.55;
+  color: #ADB6C2;
+}
+
+/* ── Section shell ──────────────────────────────────────────── */
+.md-sec { position: relative; padding-block: clamp(3.2rem, 8vh, 5.6rem); }
+.md-sec--tight { padding-block: clamp(2.6rem, 6.5vh, 4.4rem); }
+.md-sec__head { display: grid; gap: 1.15rem; max-width: 48rem; }
+.md-sec__head--center { margin-inline: auto; text-align: center; justify-items: center; }
+
+/* ── Intro band (Saffron's "Introducing" beat) ──────────────── */
+.md-intro { display: grid; gap: clamp(1.5rem, 4vh, 2.6rem); text-align: center; justify-items: center; }
+.md-intro__big { max-width: 18ch; }
+.md-intro__grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--md-hair);
+  border-left: 1px solid var(--md-hair);
+  width: 100%; margin-top: clamp(1.5rem, 4vh, 2.5rem);
+  text-align: left;
+}
+.md-intro__cell {
+  padding: clamp(1.3rem, 2.6vw, 2rem);
+  border-right: 1px solid var(--md-hair);
+  border-bottom: 1px solid var(--md-hair);
+  display: grid; gap: 0.7rem; align-content: start;
+}
+.md-intro__cell p { color: var(--sc-ink-soft); font-size: 0.9375rem; margin: 0; }
+
+/* ── The systems table ──────────────────────────────────────── */
+.md-tablewrap { overflow-x: auto; border: 1px solid var(--md-hair); background: rgba(5, 7, 11, 0.55); }
+.md-table { width: 100%; border-collapse: collapse; min-width: 46rem; }
+.md-table th {
+  text-align: left; padding: 0.7rem 1.05rem;
+  border-bottom: 1px solid var(--md-hair);
+  font-family: var(--md-font-mono); font-size: 0.625rem;
+  font-weight: 400; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--sc-ink-soft);
+  background: rgba(240,235,229,0.022);
+}
+.md-table td {
+  padding: 0.95rem 1.05rem;
+  border-bottom: 1px solid var(--md-hair-soft);
+  font-size: 0.9375rem; color: var(--sc-ink-soft);
+  vertical-align: top;
+}
+.md-table tr:last-child td { border-bottom: 0; }
+.md-table td:first-child {
+  color: var(--sc-ink); font-weight: 500;
+  font-family: var(--sc-font-display); letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+.md-table td:last-child {
+  font-family: var(--md-font-mono); font-size: 0.75rem;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--sc-accent); white-space: nowrap;
+}
+.md-table tbody tr { transition: background 200ms; }
+.md-table tbody tr:hover { background: rgba(240,235,229,0.028); }
+
+@media (max-width: 860px) {
+  .md-tablewrap { overflow: visible; border: 0; background: none; }
+  .md-table { min-width: 0; display: block; }
+  .md-table thead { display: none; }
+  .md-table tbody, .md-table tr, .md-table td { display: block; width: 100%; }
+  .md-table tr {
+    border: 1px solid var(--md-hair);
+    background: rgba(5, 7, 11, 0.55);
+    padding: 1.05rem 1.15rem;
+    margin-bottom: 0.7rem;
+  }
+  .md-table tr:last-child { margin-bottom: 0; }
+  .md-table td { border: 0; padding: 0; }
+  .md-table td:first-child {
+    white-space: normal;
+    font-size: 1.18rem;
+    margin-bottom: 0.42rem;
+  }
+  .md-table td:last-child { margin-top: 0.6rem; }
+}
+
+/* ── The sideways rail: the rest of the OS ──────────────────── */
+.md-railwrap {
+  height: 100%; display: grid; align-content: center;
+  gap: clamp(1.1rem, 3vh, 2rem);
+  padding-block: clamp(1.4rem, 5vh, 3.4rem);
+  width: 100%;
+  /* Caps the column at the container so nothing inside can stretch the
+     wrapper and drag the heading out of line with the rest of the page. */
+  grid-template-columns: minmax(0, 1fr);
+}
+.md-railwrap__head {
+  display: grid; gap: 0.7rem;
+  max-width: var(--md-wrap); width: 100%;
+  margin-inline: auto; padding-inline: var(--md-gut);
+}
+
+/* Coverflow. The active card faces you; its neighbours sit further out,
+   smaller, turned away and dimmer, so you can see the set without ever
+   being asked to read two at once. The geometry is from the 21st.dev 3D
+   coverflow component Marc sent — the perspective, the ~24deg turn, the
+   scale and opacity falloff — but it is driven continuously from scroll
+   here rather than by autoplay and arrow buttons, because the page is
+   scroll-driven and has no React in it. */
+.md-deck {
+  position: relative; width: 100%;
+  height: clamp(330px, 58vh, 500px);
+  perspective: 1400px;
+}
+.md-card {
+  position: absolute; top: 0; left: 50%;
+  width: min(88vw, 380px); height: 100%;
+  display: grid; align-content: start;
+  gap: clamp(0.5rem, 1.2vh, 0.9rem);
+  padding: clamp(0.9rem, 2vh, 1.4rem);
+  background: rgba(10, 8, 6, 0.94);
+  border: 1px solid var(--md-hair);
+  border-radius: 14px;
+  min-width: 0; overflow: hidden;
+  transform-origin: 50% 50%;
+  transform: translateX(-50%);
+  will-change: transform, opacity;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.62);
+  backface-visibility: hidden;
+}
+/* One accent per card, so six panels of the same shape are still six
+   distinct things. It rides a 2px inset rule at the top and the card's
+   own category label — never the figures, which stay ink so their
+   contrast does not depend on the accent. Every value here is light
+   enough to clear 4.5:1 on the card ground. */
+.md-card { --md-ca: var(--sc-accent); }
+.md-card:nth-of-type(1) { --md-ca: #7CBBFF; }
+.md-card:nth-of-type(2) { --md-ca: #7BE0A8; }
+.md-card:nth-of-type(3) { --md-ca: #4FD8E8; }
+.md-card:nth-of-type(4) { --md-ca: #F0C070; }
+.md-card:nth-of-type(5) { --md-ca: #C4A6FF; }
+.md-card:nth-of-type(6) { --md-ca: #F2A0A0; }
+.md-card {
+  box-shadow: inset 0 2px 0 var(--md-ca), 0 20px 55px rgba(0, 0, 0, 0.62);
+}
+.md-card__top span:first-child { color: var(--md-ca); }
+.md-card__tick { border-color: var(--md-ca); }
+.md-card__tag, .md-card__tag i { color: var(--md-ca); background-color: currentColor; }
+.md-card__tag { background: none; }
+.md-card__chain span::before { background: var(--md-ca); }
+.md-card__row--flag { background: color-mix(in srgb, var(--md-ca) 12%, transparent); }
+
+.md-card--open { background: rgba(12, 16, 24, 0.94); border-color: rgba(124, 187, 255, 0.3); }
+.md-railwrap__sub { max-width: 46rem; }
+
+/* Coverflow only works while something is choosing which card faces the
+   reader. Before JS marks the deck ready, and whenever motion is reduced,
+   the cards drop out of the 3D stage and become an ordinary vertical list
+   — otherwise they are stacked absolutely on one another and unreadable.
+   The stage gets a scrollbar in the reduced case so nothing is clipped. */
+.md-deck:not([data-ready]) { height: auto; display: grid; gap: 1rem; perspective: none; }
+.md-deck:not([data-ready]) > .md-card {
+  position: static; width: 100%; height: auto;
+  transform: none; box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #md-deck-act .sc-stage, #md-deck-act [data-sc-stage] { overflow-y: auto; }
+  .md-deck { height: auto; display: grid; gap: 1rem; perspective: none; }
+  .md-deck > .md-card {
+    position: static; width: 100%; height: auto; box-shadow: none;
+    transform: none !important; opacity: 1 !important;
+  }
+}
+
+.md-card--hero { background: rgba(12, 16, 24, 0.9); border-color: rgba(124, 187, 255, 0.34); }
+.md-card__top {
+  display: flex; justify-content: space-between; gap: 1rem;
+  font-family: var(--md-font-mono); font-size: 0.5625rem;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--sc-ink-soft);
+  padding-bottom: 0.6rem; border-bottom: 1px solid var(--md-hair);
+}
+.md-card__lead { margin: 0; font-size: 0.9375rem; line-height: 1.5; color: var(--sc-ink); }
+.md-card__foot { margin: 0; font-size: 0.8125rem; line-height: 1.5; color: var(--sc-ink-soft); }
+
+.md-card__figs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; }
+.md-card__figs div { display: grid; gap: 0.1rem; min-width: 0; }
+.md-card__figs b {
+  font-family: var(--sc-font-display); font-weight: 300;
+  font-size: clamp(1.3rem, 4.6vw, 1.75rem); line-height: 1;
+  font-variant-numeric: tabular-nums; color: var(--sc-ink);
+}
+.md-card__figs span, .md-card__key li, .md-card__stat span {
+  font-family: var(--md-font-mono); font-size: 0.5rem;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--sc-ink-soft);
+}
+.md-card__bar { display: flex; height: 5px; overflow: hidden; background: rgba(233,238,245,0.07); }
+.md-card__bar i { display: block; height: 100%; }
+.md-card__key { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.3rem 0.75rem; }
+.md-card__key li { display: flex; align-items: center; gap: 0.32rem; }
+.md-card__key i { width: 7px; height: 7px; flex: none; }
+
+.md-card__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem; }
+.md-card__stat { display: grid; gap: 0.12rem; min-width: 0; }
+.md-card__stat b {
+  font-family: var(--sc-font-display); font-weight: 300;
+  font-size: clamp(1.15rem, 4.2vw, 1.5rem); line-height: 1.05;
+  font-variant-numeric: tabular-nums; color: var(--sc-ink);
+}
+.md-card__stat em { font-style: normal; font-size: 0.6875rem; color: var(--sc-ink-soft); }
+.md-card__rows { display: grid; gap: 1px; background: var(--md-hair); border: 1px solid var(--md-hair); }
+.md-card__row {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 0.75rem;
+  background: rgba(10, 8, 6, 0.86); padding: 0.5rem 0.65rem;
+  font-size: 0.8125rem; color: var(--sc-ink-soft);
+}
+.md-card__row b { color: var(--sc-ink); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.md-card__row--flag { background: rgba(124, 187, 255, 0.1); color: var(--sc-ink); }
+
+.md-card__todo { display: flex; gap: 0.7rem; align-items: flex-start; }
+.md-card__tick {
+  width: 15px; height: 15px; flex: none; margin-top: 0.16rem;
+  border: 1.5px solid var(--sc-accent); border-radius: 50%;
+}
+.md-card__todoh { margin: 0; font-size: 0.9375rem; line-height: 1.4; color: var(--sc-ink); }
+.md-card__todom { margin: 0.2rem 0 0; font-size: 0.8125rem; color: var(--sc-ink-soft); }
+.md-card__tag {
+  margin: 0.45rem 0 0; display: flex; align-items: center; gap: 0.4rem;
+  font-family: var(--md-font-mono); font-size: 0.5rem;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--sc-accent);
+}
+.md-card__tag i { width: 5px; height: 5px; border-radius: 50%; background: var(--sc-accent); flex: none; }
+/* The four beats of what actually happened, in order, because here the
+   order is the information: the invite goes out before he has read it. */
+.md-card__chain { display: grid; gap: 1px; background: var(--md-hair); border: 1px solid var(--md-hair); }
+.md-card__chain span {
+  background: rgba(10, 8, 6, 0.86); padding: 0.42rem 0.65rem;
+  font-size: 0.75rem; color: var(--sc-ink-soft);
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.md-card__chain span::before {
+  content: ""; width: 4px; height: 4px; flex: none;
+  background: var(--sc-accent); opacity: 0.55;
+}
+.md-card__chain span:last-child { color: var(--sc-ink); }
+.md-card__chain span:last-child::before { opacity: 1; }
+
+@media (max-width: 760px) {
+  .md-railwrap { gap: 0.85rem; padding-block: 1rem; }
+  .md-card { gap: 0.55rem; padding: 0.85rem 0.9rem; }
+  .md-card__lead { font-size: 0.875rem; }
+  .md-card__foot { font-size: 0.75rem; }
+}
+
+/* ── The signature move: the reply that writes itself ───────── */
+/* The pinned act's inner column. These were inline styles; they live
+   here so the phone can have its own values. The stage is exactly one
+   screen tall and clips its overflow, so anything the column cannot fit
+   is simply cut off — on a phone that was the closing line. */
+.md-peak__in {
+  display: grid; align-content: center; height: 100%;
+  gap: clamp(1.4rem, 3.5vh, 2.4rem);
+  padding-block: clamp(4rem, 9vh, 6rem);
+}
+
+.md-mail {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: 1px;
+  background: var(--md-hair);
+  border: 1px solid var(--md-hair);
+  width: 100%; max-width: 62rem; margin-inline: auto;
+}
+.md-mail__pane { background: rgba(10,8,6,0.80); padding: clamp(1.1rem, 2.2vw, 1.7rem); display: grid; align-content: start; gap: 0.85rem; }
+.md-mail__pane--in { background: rgba(10,8,6,0.62); }
+.md-mail__hdr {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding-bottom: 0.75rem; border-bottom: 1px solid var(--md-hair-soft);
+  font-family: var(--md-font-mono); font-size: 0.625rem;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--sc-ink-soft);
+}
+.md-mail__from { font-size: 0.8125rem; color: var(--sc-ink); font-family: var(--sc-font-text); letter-spacing: 0; text-transform: none; }
+.md-mail__txt { font-size: 0.9375rem; line-height: 1.62; color: var(--sc-ink-soft); margin: 0; }
+.md-mail__bar { height: 1px; background: var(--md-hair-soft); position: relative; margin: -0.35rem 0 0.15rem; }
+.md-mail__bar i { position: absolute; top: 0; bottom: 0; left: 0; display: block; background: var(--sc-accent); width: calc(var(--md-w, 0) * 100%); }
+.md-mail__pane--in { opacity: calc(1 - var(--md-w, 0) * 0.42); transition: opacity 120ms linear; }
+.md-mail__out {
+  font-size: 0.9375rem; line-height: 1.62; color: var(--sc-ink);
+  min-height: 12.5rem; margin: 0; white-space: pre-wrap;
+}
+.md-caret {
+  display: inline-block; width: 2px; height: 1.02em;
+  background: var(--sc-accent); vertical-align: -0.16em;
+  margin-left: 1px;
+  animation: md-blink 1.05s steps(2, start) infinite;
+}
+@keyframes md-blink { to { opacity: 0; } }
+.md-mail__meters { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--md-hair); border-top: 1px solid var(--md-hair); }
+.md-meter { background: rgba(10,8,6,0.80); padding: 0.7rem 0.95rem; display: grid; gap: 0.3rem; }
+.md-meter b {
+  font-family: var(--md-font-mono); font-size: 1.02rem; font-weight: 500;
+  color: var(--sc-ink); letter-spacing: 0.02em;
+}
+.md-meter span {
+  font-family: var(--md-font-mono); font-size: 0.5625rem;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--sc-ink-soft);
+}
+.md-mail__foot { grid-column: 1 / -1; }
+
+/* ── Split: statement + copy ────────────────────────────────── */
+.md-split {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4.5rem); align-items: start;
+}
+.md-split__col { display: grid; gap: 1.15rem; align-content: start; }
+
+/* ── Proof numbers ──────────────────────────────────────────── */
+.md-proof {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--md-hair);
+  border-left: 1px solid var(--md-hair);
+}
+.md-proof__cell {
+  padding: clamp(1.4rem, 3vw, 2.3rem);
+  border-right: 1px solid var(--md-hair);
+  border-bottom: 1px solid var(--md-hair);
+  display: grid; gap: 0.5rem; align-content: start;
+}
+.md-proof__n {
+  font-variant-numeric: tabular-nums;
+  font-family: var(--sc-font-display); font-weight: 200;
+  font-size: clamp(2.4rem, 5.4vw, 4rem); line-height: 1;
+  letter-spacing: -0.035em; color: var(--sc-ink);
+}
+.md-proof__cell p { font-size: 0.875rem; color: var(--sc-ink-soft); margin: 0; }
+
+/* ── Three-column trust ─────────────────────────────────────── */
+.md-tri { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1.5rem, 3.5vw, 3rem); }
+.md-tri__col { display: grid; gap: 0.8rem; align-content: start; padding-top: 1.15rem; border-top: 1px solid var(--md-hair); }
+.md-tri__col p { font-size: 0.9375rem; color: var(--sc-ink-soft); margin: 0; }
+
+/* ── Support: video and social ──────────────────────────────── */
+.md-support {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 1px; background: var(--md-hair);
+  border: 1px solid var(--md-hair);
+}
+.md-support__cell {
+  background: var(--sc-canvas);
+  padding: clamp(1.3rem, 2.6vw, 2rem);
+  display: grid; gap: 0.65rem; align-content: start;
+  min-height: 12.5rem;
+}
+.md-support__cell p { font-size: 0.9375rem; color: var(--sc-ink-soft); margin: 0; }
+
+/* ── Cursor glow. The panel lights where the pointer is. ───── */
+[data-md-glow] { position: relative; isolation: isolate; }
+[data-md-glow]::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgba(90, 169, 255, 0.13), transparent 62%);
+  opacity: var(--mo, 0);
+  transition: opacity 300ms var(--md-ease);
+}
+
+/* ── FAQ ────────────────────────────────────────────────────── */
+.md-faq { border-top: 1px solid var(--md-hair); }
+.md-faq details { border-bottom: 1px solid var(--md-hair); }
+.md-faq summary {
+  list-style: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
+  padding: 1.15rem 0.25rem;
+  font-size: clamp(0.98rem, 1.5vw, 1.1rem);
+  color: var(--sc-ink);
+  transition: color 200ms;
+}
+.md-faq summary::-webkit-details-marker { display: none; }
+.md-faq summary:hover { color: var(--sc-accent); }
+.md-faq summary::after {
+  content: "+"; font-family: var(--md-font-mono); font-size: 1.1rem;
+  color: var(--sc-accent); flex: none; transition: transform 260ms var(--md-ease);
+}
+.md-faq details[open] summary::after { transform: rotate(45deg); }
+.md-faq__a { padding: 0 0.25rem 1.35rem; max-width: 52rem; color: var(--sc-ink-soft); font-size: 0.9375rem; margin: 0; }
+
+/* ── Close + footer ─────────────────────────────────────────── */
+/* The atmosphere returns at the end, but not underneath the reading.
+   Section-local scrim, never a full-frame overlay. */
+#os, #systems, #work, #how { position: relative; isolation: isolate; }
+#os::before, #systems::before, #work::before, #how::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(180deg, rgba(5, 7, 11, 0.62), rgba(5, 7, 11, 0.82) 30%, rgba(5, 7, 11, 0.82) 70%, rgba(5, 7, 11, 0.62));
+}
+#faq { position: relative; isolation: isolate; }
+#faq::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(180deg, rgba(5, 7, 11, 0.40), rgba(5, 7, 11, 0.80) 34%, rgba(5, 7, 11, 0.86));
+}
+#book { position: relative; isolation: isolate; }
+#book::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(180deg, rgba(5, 7, 11, 0.62), rgba(5, 7, 11, 0.90) 26%, rgba(5, 7, 11, 0.94));
+}
+#book .md-body { color: #9DA8B6; }
+.md-close {
+  text-align: center; display: grid; justify-items: center; gap: 1.5rem;
+  margin-bottom: clamp(2.6rem, 6.5vh, 4.2rem);
+}
+.md-foot {
+  border-top: 1px solid var(--md-hair);
+  padding-block: clamp(2.4rem, 6vh, 3.6rem);
+  display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4rem);
+}
+.md-foot__a { display: grid; gap: 1.05rem; align-content: start; max-width: 30rem; }
+.md-foot__b { display: grid; gap: 0.55rem; align-content: start; justify-items: start; }
+.md-foot__b a {
+  font-family: var(--md-font-mono); font-size: 0.6875rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: #9DA8B6; text-decoration: none; transition: color 200ms;
+}
+.md-foot__b a:hover, .md-foot__b a:focus-visible { color: var(--sc-ink); }
+.md-foot__fine { font-family: var(--md-font-mono); font-size: 0.625rem; letter-spacing: 0.1em; color: #8F9AA8; text-transform: uppercase; }
+
+/* ── Loader ─────────────────────────────────────────────────── */
+.md-loader {
+  position: fixed; inset: 0; z-index: 200;
+  display: grid; place-items: center;
+  background: #060504;
+  transition: opacity 620ms var(--md-ease), transform 620ms var(--md-ease);
+  /* Fail-safe: if JS never runs, the overlay still leaves.
+     Animate transform and opacity, never visibility alone: a
+     keyframe that only sets `visibility: hidden` does NOT stick
+     under `forwards` fill in Chrome, which leaves an invisible
+     fixed overlay eating every click on the page. */
+  animation: md-loader-out 520ms var(--md-ease) 1.9s forwards;
+}
+@keyframes md-loader-out {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-100%); }
+}
+.md-loader[data-done] { opacity: 0; transform: translateY(-100%); pointer-events: none; animation: none; }
+.md-loader__in { display: grid; justify-items: center; gap: 1.1rem; }
+/* Wider than the old bare mark, because this is the full lockup: the
+   mark with both words stacked under it. */
+.md-loader__mark { position: relative; width: clamp(170px, 27vw, 280px); }
+.md-loader__mark svg { width: 100%; height: auto; display: block; }
+.md-loader__ghost path { fill: rgba(240,235,229,0.10); }
+.md-loader__fill {
+  position: absolute; inset: 0;
+  -webkit-mask-image: linear-gradient(90deg, #000 0 var(--md-load, 0%), transparent var(--md-load, 0%));
+  mask-image: linear-gradient(90deg, #000 0 var(--md-load, 0%), transparent var(--md-load, 0%));
+}
+.md-loader__fill path { fill: var(--sc-ink); }
+/* The page waits behind the loader, but never permanently. */
+.md-shell { visibility: hidden; animation: md-shell-in 1ms linear 1.9s forwards; }
+@keyframes md-shell-in { to { visibility: visible; } }
+body.md-ready .md-shell { visibility: visible; animation: none; }
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 1000px) {
+  .md-mail { grid-template-columns: 1fr; }
+  .md-mail__meters { grid-template-columns: repeat(3, 1fr); }
+  .md-split, .md-tri, .md-support, .md-intro__grid, .md-proof { grid-template-columns: 1fr; }
+  .md-foot { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
+  .md-nav__links { display: none; }
+  .md-nav .md-pill { margin-left: auto; }
+
+  /* The pinned act has to fit one screen exactly, because the stage
+     clips whatever hangs past it. On a phone the column was 54px over
+     on a 844px screen and 89px over on a 780px one, and what fell off
+     the bottom was the line the whole act builds to. Nothing here
+     shrinks the reply itself; the room comes from the padding and gaps
+     around it, which were sized for a desktop and are the cheapest
+     thing in the layout to give up. */
+  .md-peak__in {
+    padding-block: clamp(1rem, 2.4vh, 1.6rem);
+    gap: clamp(0.75rem, 1.8vh, 1.1rem);
+  }
+  .md-mail__pane { padding: 0.85rem 0.9rem; gap: 0.6rem; }
+  .md-mail__txt, .md-mail__out { font-size: 0.875rem; line-height: 1.5; }
+  .md-meter { padding: 0.5rem 0.7rem; gap: 0.15rem; }
+}
+
+/* Short phones need more than tighter spacing: the column is stacked
+   there, so the inbound note, the reply, the meters and the closing
+   line are all fighting for one screen. Keyed to viewport HEIGHT, not
+   width, because that is the axis that actually runs out — a tall phone
+   keeps the full setup untouched.
+
+   What gives way is the inbound note. It is the setup, not the payload,
+   and the reply quotes its own specifics back at the reader anyway, so
+   a few lines still carry it. The drafted reply is never touched: it is
+   the thing the act exists to show. */
+@media (max-width: 760px) and (max-height: 900px) {
+  /* `min-width: 0` is load-bearing, not tidiness. A `-webkit-box` reports
+     its min-content width as the whole unwrapped sentence, and a grid
+     item defaults to `min-width: auto`, so without this the track grows
+     to ~480px inside a ~335px phone and the panel runs off the screen.
+     It does not scroll there either, because the page clips overflow —
+     it just silently loses its right edge. */
+  .md-mail, .md-mail__pane, .md-mail__txt, .md-mail__out,
+  .md-mail__meters, .md-meter, .md-meter b, .md-meter span { min-width: 0; }
+  .md-mail__txt {
+    display: -webkit-box; -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4; line-clamp: 4; overflow: hidden;
+  }
+  .md-peak__in > [data-sc-cue]:first-child { gap: 0.5rem; }
+  #md-peak .md-h2 { font-size: clamp(1.35rem, 5.4vw, 1.7rem); }
+}
+/* The meters keep all three figures and keep the number stacked above
+   its label — laying them side by side made each cell's minimum width
+   its full text, and three of those will not fit a 335px phone. The
+   height comes back out of padding and type size instead, which costs
+   nothing structurally. */
+@media (max-width: 760px) and (max-height: 840px) {
+  .md-meter { padding: 0.32rem 0.5rem; gap: 0.05rem; }
+  .md-meter b { font-size: 0.9rem; }
+  .md-meter span { font-size: 0.5rem; letter-spacing: 0.09em; }
+  .md-mail__out { line-height: 1.4; }
+  .md-mail__hdr { font-size: 0.5rem; }
+  .md-mail__from { font-size: 0.8125rem; line-height: 1.4; }
+}
+/* Under ~680px of screen the meters go. Everything else here is a size
+   reduction; this is the one real removal, and it is the right thing to
+   lose because the line directly beneath it — "You did not write a word
+   of that" — already makes the meters' point in words, and that line is
+   what the whole act is built to deliver. */
+@media (max-width: 760px) and (max-height: 680px) {
+  .md-mail__meters { display: none; }
+}
+@media (max-width: 760px) and (max-height: 740px) {
+  .md-mail__txt { -webkit-line-clamp: 2; line-clamp: 2; }
+  .md-mail__pane { padding: 0.7rem 0.8rem; gap: 0.45rem; }
+  .md-peak__in { padding-block: 0.7rem; gap: 0.6rem; }
+}
+/* 640-tall phones cleared the bottom edge by a single pixel, which is
+   not a margin, it is a coincidence. One line off the setup note buys
+   back about 20px and makes the fit real. */
+@media (max-width: 760px) and (max-height: 690px) {
+  .md-mail__txt { -webkit-line-clamp: 1; line-clamp: 1; }
+}
+/* Below roughly an iPhone SE1, the setup pane cannot be afforded at all.
+   The reply being written is the whole point of the act, so that is what
+   survives; its own header still says the message came in. */
+@media (max-width: 760px) and (max-height: 620px) {
+  .md-mail__pane--in { display: none; }
+  #md-peak .md-h2 { font-size: 1.25rem; }
+}
+
+/* The deck act on a short screen: the standfirst under the heading is the
+   first thing to go, then the stage itself gets shorter. The cards keep
+   their content; only the room around them shrinks. */
+@media (max-height: 700px) {
+  .md-railwrap__sub { display: none; }
+  .md-deck { height: clamp(300px, 54vh, 420px); }
+}
+
+/* The smallest phones still had the deck a shade taller than the stage,
+   and the stage clips. Taken out of the card's own padding and type, so
+   nothing is removed, only tightened. */
+@media (max-height: 620px) {
+  .md-card { padding: 0.65rem 0.8rem; gap: 0.4rem; }
+  .md-card__lead { font-size: 0.8125rem; line-height: 1.42; }
+  .md-card__foot { font-size: 0.6875rem; line-height: 1.4; }
+  .md-card__chain span { padding: 0.3rem 0.55rem; font-size: 0.6875rem; }
+  .md-card__row { padding: 0.36rem 0.55rem; font-size: 0.75rem; }
+}
+
+/* Anyone who has asked for less translucency gets the same silver as a
+   solid fill: same colour, same rim, no blur and nothing showing through. */
+@media (prefers-reduced-transparency: reduce) {
+  .md-pill {
+    background: #10141D;
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+  }
+  .md-pill:hover, .md-pill:focus-visible { background: #1A2130; }
+}
+
+/* ── Reduced motion ─────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .md-caret { animation: none; }
+  .md-pill::after { display: none; }
+  .md-pill::before { animation: none; }
+  [data-md-glow]::before { display: none; }
+  .md-rot em { transition: opacity 200ms linear; transform: none; }
+  .md-rot em[data-st="past"], .md-rot em[data-st="on"] { transform: none; }
+  .md-h1 { -webkit-mask-image: none; mask-image: none; }
+  .md-pill:hover { transform: none; }
+}
+</style>
+</head>
+
+<body>
+
+<span data-sc-progress></span>
+<canvas id="md-gl" aria-hidden="true"></canvas>
+<div id="md-gl-fallback" aria-hidden="true"></div>
+<div class="sc-grain" aria-hidden="true"></div>
+
+<!-- ── Loader: the mark fills left to right, then leaves ────── -->
+<div class="md-loader" id="md-loader" aria-hidden="true">
+  <div class="md-loader__in">
+    <!-- The whole lockup, mark and both words, exactly as the brand file
+         arranges them. The word beneath is part of the art now, so the
+         separate type line that used to sit here is gone. -->
+    <div class="md-loader__mark">
+      <svg class="md-loader__ghost" viewBox="0 0 1000 851.7" aria-hidden="true"><path d="M312.3 419.3L271.1 405.5L387.1 50.5L490.8 243.7L493.9 240.2L606.3 -0.4L726.4 56.4L707.3 95.9L627.1 59.1L494.8 342.7L493.1 342.5L397.6 162.8L312.3 419.3Z M532.8 719.2L513.1 718.1L496.1 712.8L477.7 701.1L464.1 686.4L453.5 666.7L448.4 645.7L448.3 620.7L452.3 602.4L460.2 585.3L473.7 568.2L489.5 556.1L505.2 549.3L527.6 546.2L545.9 548.1L564.3 555.9L577.4 566.6L578.6 467.2L615.5 466.5L616.7 467.2L616.7 715.2L578.7 715.4L577.4 699.0L569.6 706.1L557.7 713.2L547.2 717.0L532.8 719.2Z M671.9 518.6L662.7 518.9L654.9 516.2L645.4 505.2L643.8 496.1L645.5 486.9L651.3 479.0L658.8 474.5L668.0 473.3L677.2 475.8L684.1 481.6L688.1 489.5L688.6 498.7L686.7 506.6L679.8 515.0L671.9 518.6Z M257.2 715.9L220.0 715.2L220.0 616.8L218.1 603.7L213.1 594.5L204.7 587.3L196.9 583.6L183.7 581.9L171.9 583.4L162.7 587.5L154.9 594.7L149.2 605.0L147.7 614.2L147.0 715.9L109.6 715.2L109.6 616.8L108.1 605.0L102.6 594.5L94.5 587.4L86.6 583.7L73.5 581.9L60.4 583.6L52.5 587.3L44.3 594.5L38.8 605.0L37.2 618.1L37.2 715.2L0.0 715.9L-0.5 549.9L36.7 549.7L38.1 565.6L47.2 557.5L63.0 549.5L76.1 546.6L97.1 547.0L110.2 550.6L120.7 556.0L139.1 573.0L147.0 564.1L157.5 556.0L168.0 550.8L182.4 546.9L211.3 548.1L232.3 557.3L248.4 573.5L255.0 586.6L257.6 598.4L257.2 715.9Z M367.5 719.2L347.8 718.3L334.6 715.4L321.5 710.2L307.1 701.2L292.3 686.4L284.6 674.5L278.9 661.4L275.1 644.4L275.1 620.7L277.8 607.6L283.4 593.2L292.5 578.7L305.8 565.2L317.6 557.2L332.0 550.6L349.1 546.7L366.1 546.4L380.6 548.4L395.0 553.4L408.1 561.3L417.3 569.6L428.2 584.0L434.9 598.4L438.9 615.5L439.7 631.2L437.0 646.9L314.8 647.0L316.1 654.9L322.8 666.2L332.0 675.0L342.5 680.4L358.3 683.5L374.0 682.7L389.8 677.4L404.2 666.3L428.3 690.3L416.0 702.5L402.9 710.5L384.5 716.9L367.5 719.2Z M753.3 715.9L715.9 715.2L716.1 549.9L753.3 549.5L754.6 566.1L767.7 553.5L780.8 548.1L800.5 546.3L817.6 549.6L830.7 557.4L838.0 565.6L815.0 589.4L813.6 590.4L805.8 584.8L797.9 582.3L778.2 583.5L765.1 591.2L756.8 603.7L754.1 618.1L753.3 715.9Z M914.7 719.2L895.0 718.1L872.7 710.3L855.6 697.5L840.9 678.5L831.8 654.9L829.6 633.9L831.7 611.5L837.9 593.2L847.4 577.4L860.0 564.3L874.0 554.6L891.1 548.2L909.4 546.2L927.8 548.2L946.2 555.9L959.3 566.8L960.9 549.9L997.4 549.5L998.4 715.2L960.6 715.5L959.3 698.9L952.8 705.1L939.6 713.2L929.1 717.0L914.7 719.2Z M685.0 715.6L647.4 715.2L648.3 549.5L683.7 549.5L685.5 551.2L685.0 715.6Z M401.9 615.5L397.7 602.4L388.5 590.4L376.6 583.6L359.6 581.0L342.5 583.6L332.0 588.7L319.9 601.0L314.2 614.2L315.0 615.9L401.9 615.5Z M544.0 682.4L561.7 674.9L575.3 658.8L580.6 641.7L579.2 616.8L571.0 599.7L559.1 588.7L540.7 582.4L521.0 583.6L505.2 591.5L492.9 606.3L487.6 622.0L487.7 644.4L494.2 661.4L506.6 675.0L524.9 682.6L544.0 682.4Z M925.8 682.4L943.6 674.9L957.1 658.8L962.5 640.4L961.0 616.8L952.9 599.7L940.9 588.7L922.6 582.4L902.9 583.6L887.1 591.4L874.7 606.3L869.5 622.0L869.8 645.7L877.6 664.0L888.5 675.1L906.8 682.7L925.8 682.4Z M493.4 833.6L486.6 833.3L486.9 775.3L493.8 775.6L493.4 833.6Z M526.2 786.3L520.6 784.8L521.0 778.1L527.8 778.2L528.9 783.1L526.2 786.3Z M332.0 833.6L318.9 833.5L310.5 828.1L315.0 822.7L322.8 827.6L329.4 827.2L332.9 824.1L330.7 819.3L316.5 813.6L312.3 808.4L313.4 799.2L321.5 793.8L334.6 795.1L339.9 800.0L336.0 804.5L325.5 800.2L319.4 803.1L321.5 808.0L333.3 812.2L338.7 816.3L340.2 822.8L338.9 828.1L332.0 833.6Z M388.5 833.6L372.7 832.2L367.2 828.1L363.2 821.5L361.9 813.6L363.4 805.8L367.5 799.5L374.0 795.1L387.1 793.9L396.7 799.2L392.4 804.8L385.8 801.0L378.0 801.3L372.1 805.8L369.6 811.0L370.8 820.2L376.6 826.1L384.5 827.3L392.4 823.0L396.7 826.8L394.4 830.7L388.5 833.6Z M456.7 833.6L451.4 833.6L450.1 830.0L443.6 833.5L431.8 833.6L423.9 828.6L419.9 822.5L418.3 813.6L419.8 805.8L423.9 799.1L434.4 793.8L442.1 794.0L450.1 798.4L451.4 794.6L458.0 795.0L458.1 832.0L456.7 833.6Z M590.6 833.6L583.8 833.3L583.3 807.1L577.4 801.0L573.5 800.6L568.2 802.1L563.6 808.4L563.3 833.3L556.1 833.3L556.4 794.6L563.0 794.6L564.3 797.8L571.6 794.0L578.7 793.8L586.8 797.9L590.8 805.8L590.6 833.6Z M639.1 850.4L624.0 849.1L618.1 845.3L616.6 841.2L620.7 837.9L628.6 843.1L639.1 843.2L645.1 838.6L647.4 829.4L645.7 828.6L637.8 832.4L624.7 830.8L616.7 821.5L615.5 809.2L619.2 800.5L626.0 795.1L637.8 793.8L647.0 797.7L648.3 794.6L653.5 794.6L653.6 838.6L649.6 845.2L639.1 850.4Z M527.6 833.6L520.7 833.3L521.0 794.8L527.9 795.3L527.6 833.6Z M441.4 826.8L448.2 822.8L450.7 817.6L451.0 811.0L444.9 802.2L434.4 801.2L427.0 808.4L426.0 816.3L427.2 820.2L433.1 826.2L441.4 826.8Z M638.2 825.5L644.9 821.5L647.6 811.0L641.7 802.2L631.2 801.0L624.1 807.1L623.0 816.3L629.9 824.9L638.2 825.5Z" fill-rule="evenodd"/></svg>
+      <svg class="md-loader__fill" viewBox="0 0 1000 851.7" aria-hidden="true"><path d="M312.3 419.3L271.1 405.5L387.1 50.5L490.8 243.7L493.9 240.2L606.3 -0.4L726.4 56.4L707.3 95.9L627.1 59.1L494.8 342.7L493.1 342.5L397.6 162.8L312.3 419.3Z M532.8 719.2L513.1 718.1L496.1 712.8L477.7 701.1L464.1 686.4L453.5 666.7L448.4 645.7L448.3 620.7L452.3 602.4L460.2 585.3L473.7 568.2L489.5 556.1L505.2 549.3L527.6 546.2L545.9 548.1L564.3 555.9L577.4 566.6L578.6 467.2L615.5 466.5L616.7 467.2L616.7 715.2L578.7 715.4L577.4 699.0L569.6 706.1L557.7 713.2L547.2 717.0L532.8 719.2Z M671.9 518.6L662.7 518.9L654.9 516.2L645.4 505.2L643.8 496.1L645.5 486.9L651.3 479.0L658.8 474.5L668.0 473.3L677.2 475.8L684.1 481.6L688.1 489.5L688.6 498.7L686.7 506.6L679.8 515.0L671.9 518.6Z M257.2 715.9L220.0 715.2L220.0 616.8L218.1 603.7L213.1 594.5L204.7 587.3L196.9 583.6L183.7 581.9L171.9 583.4L162.7 587.5L154.9 594.7L149.2 605.0L147.7 614.2L147.0 715.9L109.6 715.2L109.6 616.8L108.1 605.0L102.6 594.5L94.5 587.4L86.6 583.7L73.5 581.9L60.4 583.6L52.5 587.3L44.3 594.5L38.8 605.0L37.2 618.1L37.2 715.2L0.0 715.9L-0.5 549.9L36.7 549.7L38.1 565.6L47.2 557.5L63.0 549.5L76.1 546.6L97.1 547.0L110.2 550.6L120.7 556.0L139.1 573.0L147.0 564.1L157.5 556.0L168.0 550.8L182.4 546.9L211.3 548.1L232.3 557.3L248.4 573.5L255.0 586.6L257.6 598.4L257.2 715.9Z M367.5 719.2L347.8 718.3L334.6 715.4L321.5 710.2L307.1 701.2L292.3 686.4L284.6 674.5L278.9 661.4L275.1 644.4L275.1 620.7L277.8 607.6L283.4 593.2L292.5 578.7L305.8 565.2L317.6 557.2L332.0 550.6L349.1 546.7L366.1 546.4L380.6 548.4L395.0 553.4L408.1 561.3L417.3 569.6L428.2 584.0L434.9 598.4L438.9 615.5L439.7 631.2L437.0 646.9L314.8 647.0L316.1 654.9L322.8 666.2L332.0 675.0L342.5 680.4L358.3 683.5L374.0 682.7L389.8 677.4L404.2 666.3L428.3 690.3L416.0 702.5L402.9 710.5L384.5 716.9L367.5 719.2Z M753.3 715.9L715.9 715.2L716.1 549.9L753.3 549.5L754.6 566.1L767.7 553.5L780.8 548.1L800.5 546.3L817.6 549.6L830.7 557.4L838.0 565.6L815.0 589.4L813.6 590.4L805.8 584.8L797.9 582.3L778.2 583.5L765.1 591.2L756.8 603.7L754.1 618.1L753.3 715.9Z M914.7 719.2L895.0 718.1L872.7 710.3L855.6 697.5L840.9 678.5L831.8 654.9L829.6 633.9L831.7 611.5L837.9 593.2L847.4 577.4L860.0 564.3L874.0 554.6L891.1 548.2L909.4 546.2L927.8 548.2L946.2 555.9L959.3 566.8L960.9 549.9L997.4 549.5L998.4 715.2L960.6 715.5L959.3 698.9L952.8 705.1L939.6 713.2L929.1 717.0L914.7 719.2Z M685.0 715.6L647.4 715.2L648.3 549.5L683.7 549.5L685.5 551.2L685.0 715.6Z M401.9 615.5L397.7 602.4L388.5 590.4L376.6 583.6L359.6 581.0L342.5 583.6L332.0 588.7L319.9 601.0L314.2 614.2L315.0 615.9L401.9 615.5Z M544.0 682.4L561.7 674.9L575.3 658.8L580.6 641.7L579.2 616.8L571.0 599.7L559.1 588.7L540.7 582.4L521.0 583.6L505.2 591.5L492.9 606.3L487.6 622.0L487.7 644.4L494.2 661.4L506.6 675.0L524.9 682.6L544.0 682.4Z M925.8 682.4L943.6 674.9L957.1 658.8L962.5 640.4L961.0 616.8L952.9 599.7L940.9 588.7L922.6 582.4L902.9 583.6L887.1 591.4L874.7 606.3L869.5 622.0L869.8 645.7L877.6 664.0L888.5 675.1L906.8 682.7L925.8 682.4Z M493.4 833.6L486.6 833.3L486.9 775.3L493.8 775.6L493.4 833.6Z M526.2 786.3L520.6 784.8L521.0 778.1L527.8 778.2L528.9 783.1L526.2 786.3Z M332.0 833.6L318.9 833.5L310.5 828.1L315.0 822.7L322.8 827.6L329.4 827.2L332.9 824.1L330.7 819.3L316.5 813.6L312.3 808.4L313.4 799.2L321.5 793.8L334.6 795.1L339.9 800.0L336.0 804.5L325.5 800.2L319.4 803.1L321.5 808.0L333.3 812.2L338.7 816.3L340.2 822.8L338.9 828.1L332.0 833.6Z M388.5 833.6L372.7 832.2L367.2 828.1L363.2 821.5L361.9 813.6L363.4 805.8L367.5 799.5L374.0 795.1L387.1 793.9L396.7 799.2L392.4 804.8L385.8 801.0L378.0 801.3L372.1 805.8L369.6 811.0L370.8 820.2L376.6 826.1L384.5 827.3L392.4 823.0L396.7 826.8L394.4 830.7L388.5 833.6Z M456.7 833.6L451.4 833.6L450.1 830.0L443.6 833.5L431.8 833.6L423.9 828.6L419.9 822.5L418.3 813.6L419.8 805.8L423.9 799.1L434.4 793.8L442.1 794.0L450.1 798.4L451.4 794.6L458.0 795.0L458.1 832.0L456.7 833.6Z M590.6 833.6L583.8 833.3L583.3 807.1L577.4 801.0L573.5 800.6L568.2 802.1L563.6 808.4L563.3 833.3L556.1 833.3L556.4 794.6L563.0 794.6L564.3 797.8L571.6 794.0L578.7 793.8L586.8 797.9L590.8 805.8L590.6 833.6Z M639.1 850.4L624.0 849.1L618.1 845.3L616.6 841.2L620.7 837.9L628.6 843.1L639.1 843.2L645.1 838.6L647.4 829.4L645.7 828.6L637.8 832.4L624.7 830.8L616.7 821.5L615.5 809.2L619.2 800.5L626.0 795.1L637.8 793.8L647.0 797.7L648.3 794.6L653.5 794.6L653.6 838.6L649.6 845.2L639.1 850.4Z M527.6 833.6L520.7 833.3L521.0 794.8L527.9 795.3L527.6 833.6Z M441.4 826.8L448.2 822.8L450.7 817.6L451.0 811.0L444.9 802.2L434.4 801.2L427.0 808.4L426.0 816.3L427.2 820.2L433.1 826.2L441.4 826.8Z M638.2 825.5L644.9 821.5L647.6 811.0L641.7 802.2L631.2 801.0L624.1 807.1L623.0 816.3L629.9 824.9L638.2 825.5Z" fill-rule="evenodd"/></svg>
+    </div>
+  </div>
+</div>
+
+<noscript><style>
+  .md-loader { display: none !important; }
+  .md-shell { visibility: visible !important; animation: none !important; }
+  #md-gl { display: none !important; }
+  #md-gl-fallback { display: block !important; }
+</style></noscript>
+
+<div class="md-shell">
+
+<header class="md-nav" id="md-nav">
+  <a class="md-nav__mark" href="#top">
+    <svg class="md-nav__glyph" viewBox="0 0 1000 923.5" aria-hidden="true"><path d="M96.3 913.7L7.4 883.9L257.8 117.6L481.6 534.6L488.2 526.9L730.9 7.7L990.2 130.3L949.0 215.5L775.7 136.0L490.1 748.4L486.5 747.9L280.5 360.0L96.3 913.7Z" fill="currentColor"/></svg>
+    <svg class="md-nav__word" viewBox="0 0 1000 259.1" role="img" aria-label="Medira"><path d="M532.6 253.9L513.0 252.9L496.1 247.6L477.9 236.0L464.4 221.4L453.9 201.8L448.8 181.0L448.7 156.2L452.7 138.0L460.5 121.1L473.9 104.2L489.6 92.1L505.2 85.4L527.3 82.3L545.6 84.2L563.8 91.9L576.8 102.6L578.0 3.9L614.6 3.2L615.8 3.9L615.8 250.0L578.1 250.1L576.8 233.9L569.0 241.0L557.3 248.0L546.9 251.7L532.6 253.9Z M670.6 54.9L661.5 55.2L653.6 52.6L644.2 41.7L642.6 32.6L644.4 23.4L650.1 15.6L657.6 11.1L666.7 10.0L675.8 12.5L682.7 18.2L686.6 26.0L687.1 35.2L685.3 43.0L678.4 51.3L670.6 54.9Z M259.1 250.6L222.2 250.0L222.2 152.3L220.4 139.3L215.3 130.2L207.0 123.1L199.2 119.4L186.2 117.7L174.5 119.2L165.4 123.3L157.6 130.4L151.9 140.6L150.4 149.7L149.7 250.6L112.6 250.0L112.6 152.3L111.1 140.6L105.7 130.2L97.7 123.2L89.8 119.5L76.8 117.7L63.8 119.4L56.0 123.1L47.9 130.2L42.4 140.6L40.8 153.6L40.8 250.0L3.9 250.6L3.4 85.9L40.4 85.8L41.7 101.5L50.8 93.5L66.4 85.6L79.4 82.7L100.3 83.1L113.3 86.7L123.7 92.0L141.9 108.8L149.7 100.1L160.2 92.1L170.6 86.8L184.9 83.0L213.5 84.1L234.4 93.3L250.4 109.4L256.9 122.4L259.5 134.1L259.1 250.6Z M368.5 254.0L349.0 253.1L335.9 250.2L322.9 245.0L308.6 236.0L293.9 221.4L286.3 209.6L280.7 196.6L276.8 179.7L276.9 156.2L279.5 143.2L285.1 128.9L294.1 114.6L307.3 101.2L319.0 93.2L333.3 86.7L350.3 82.8L367.2 82.5L381.5 84.4L395.8 89.4L408.9 97.3L418.0 105.5L428.8 119.8L435.4 134.1L439.4 151.0L440.2 166.7L437.5 182.2L316.3 182.3L317.5 190.1L324.2 201.4L333.3 210.1L343.8 215.4L359.4 218.5L375.0 217.8L390.6 212.5L404.9 201.4L428.9 225.3L416.7 237.4L403.6 245.3L385.4 251.7L368.5 254.0Z M751.3 250.6L714.2 250.0L714.5 85.9L751.3 85.6L752.6 102.0L765.6 89.5L778.6 84.1L798.2 82.4L815.1 85.7L828.1 93.4L835.3 101.6L812.5 125.2L811.2 126.1L803.4 120.6L795.6 118.1L776.0 119.3L763.0 126.9L754.8 139.3L752.1 153.6L751.3 250.6Z M911.5 253.9L891.9 252.9L869.8 245.1L852.9 232.5L838.2 213.5L829.2 190.1L827.0 169.3L829.1 147.1L835.3 128.9L844.7 113.3L857.2 100.3L871.1 90.7L888.0 84.3L906.2 82.3L924.5 84.2L942.7 91.9L955.7 102.7L957.3 85.9L993.5 85.6L994.6 250.0L957.0 250.3L955.7 233.8L949.2 240.0L936.2 248.0L925.8 251.7L911.5 253.9Z M683.6 250.4L646.2 250.0L647.1 85.6L682.3 85.6L684.0 87.2L683.6 250.4Z M402.6 151.0L398.5 138.0L389.3 126.2L377.6 119.4L360.7 116.8L343.8 119.4L333.3 124.5L321.3 136.7L315.6 149.7L316.4 151.4L402.6 151.0Z M543.6 217.4L561.2 210.0L574.8 194.0L579.9 177.1L578.6 152.3L570.4 135.4L558.6 124.5L540.4 118.2L520.8 119.4L505.2 127.3L493.0 141.9L487.7 157.6L487.8 179.7L494.2 196.6L506.5 210.1L524.7 217.7L543.6 217.4Z M922.4 217.4L940.1 210.0L953.6 194.0L958.9 175.8L957.4 152.3L949.3 135.4L937.5 124.5L919.3 118.3L899.7 119.4L884.1 127.1L871.8 141.9L866.6 157.6L866.9 181.0L874.7 199.2L885.4 210.2L903.6 217.7L922.4 217.4Z" fill="currentColor" fill-rule="evenodd"/></svg>
+  </a>
+  <nav class="md-nav__links" aria-label="Sections">
+    <a href="#systems">Systems</a>
+    <a href="#work">Work</a>
+    <a href="#how">How it holds</a>
+    <a href="#faq">FAQ</a>
+  </nav>
+  <a class="md-pill" href="#book" data-md-book>Book a call</a>
+</header>
+
+<main id="top">
+
+  <!-- ═══ 1 · HERO ═══════════════════════════════════════════ -->
+  <section class="md-hero">
+    <div class="md-hero__grid">
+      <div class="md-hero__copy">
+        <p class="md-hero__line"><i aria-hidden="true"></i>Medira is an AI operating system for marketing and outreach.</p>
+        <h1 class="md-h1">
+          <span class="md-h1__lead">Get back your</span>
+          <span class="md-rot" id="md-rot"><em data-md-word>business.</em><em data-md-word>time.</em><em data-md-word>life.</em></span>
+        </h1>
+        <p class="md-hero__note">It reads your inbox, drafts every reply in your voice, and runs your follow&#8209;up while you sleep. You approve. It sends.</p>
+        <div class="md-hero__cta">
+          <a class="md-pill" href="#book" data-md-book>
+            Book a call
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 2 · WHAT IT IS ═════════════════════════════════════ -->
+  <section class="md-sec" id="os">
+    <div class="md-wrap">
+      <div class="md-intro" data-sc-in data-sc-stagger="70">
+        <p class="md-label">Introducing</p>
+        <h2 class="md-h2 md-intro__big">The Medira OS</h2>
+        <p class="md-body" style="max-width:44rem">One database that knows how you write, who you have talked to, and what you already said. Every system on this page runs on it.</p>
+        <div class="md-intro__grid">
+          <div class="md-intro__cell" data-md-glow>
+            <p class="md-label md-label--mute">It learns you</p>
+            <p>We feed it your sent mail, your proposals and your call notes. It builds a model of your phrasing, not a generic assistant tone.</p>
+          </div>
+          <div class="md-intro__cell" data-md-glow>
+            <p class="md-label md-label--mute">It drafts first</p>
+            <p>Nothing sits unanswered. Every message arrives with a reply already written, waiting on your yes.</p>
+          </div>
+          <div class="md-intro__cell" data-md-glow>
+            <p class="md-label md-label--mute">It remembers</p>
+            <p>Every thread, quote and promise stays in one place. It never asks you something it has already been told.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 3 · THE SYSTEMS TABLE ══════════════════════════════ -->
+  <section class="md-sec md-sec--tight" id="systems">
+    <div class="md-wrap">
+      <div class="md-sec__head" data-sc-in data-sc-stagger="60" style="margin-bottom:clamp(1.6rem,4vh,2.6rem)">
+        <p class="md-label">The systems</p>
+        <h2 class="md-h2">Five systems. One brain.</h2>
+        <p class="md-body">Each one runs on the same database, so they never contradict each other. Start with one. Add the rest when it earns it.</p>
+      </div>
+      <div class="md-tablewrap" data-sc-reveal="up" data-sc-reveal-at="0 0.5">
+        <table class="md-table">
+          <thead>
+            <tr><th scope="col">System</th><th scope="col">What it does</th><th scope="col">Typical build</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Inbox</td><td>Reads every inbound message, sorts it, and writes the reply in your voice. You approve, it sends.</td><td>1 week</td></tr>
+            <tr><td>Reporting</td><td>Pulls the week's numbers and writes the client update you were going to write yourself.</td><td>1 week</td></tr>
+            <tr><td>Outreach</td><td>Researches the prospect, writes the first touch, and runs follow&#8209;up until they answer or bow out.</td><td>2 weeks</td></tr>
+            <tr><td>Proposal</td><td>Turns a discovery call into a scoped, priced document before you get back to your desk.</td><td>2 weeks</td></tr>
+            <tr><td>Command</td><td>Pulls every tool you already pay for into the one database. Banking, payroll, invoicing, CRM, the project board. It works the numbers overnight and hands you the two decisions that are actually yours to make.</td><td>3 weeks</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 4 · SIGNATURE: the reply that writes itself ═════════ -->
+  <section data-sc-act="pin" data-sc-span="1.35" data-sc-drift="#0C0A08" id="md-peak">
+    <div data-sc-stage>
+      <div class="md-wrap md-peak__in">
+        <div style="display:grid;gap:0.9rem;max-width:44rem" data-sc-cue="0 1 0 0">
+          <p class="md-label">Watch it work</p>
+          <h2 class="md-h2">This reply is being written right now.</h2>
+        </div>
+
+        <div class="md-mail" id="md-mail" data-sc-cue="0 1 0 0">
+          <div class="md-mail__pane md-mail__pane--in">
+            <div class="md-mail__hdr"><span>Inbound</span><span>09:14</span></div>
+            <p class="md-mail__from">Dana Whitfield · Aldridge Manufacturing<br><span style="color:var(--sc-ink-soft)">Re: quote for the Q4 run</span></p>
+            <p class="md-mail__txt">Hi Marc, thanks for the walkthrough Tuesday. Leadership wants to move, but they are asking about lead time on the second line, and whether the pricing holds if we push the start to January. Can you come back to us this week?</p>
+          </div>
+          <div class="md-mail__pane">
+            <div class="md-mail__hdr"><span>Drafted in your voice</span><span id="md-mail-clock">09:14</span></div>
+            <div class="md-mail__bar" aria-hidden="true"><i></i></div>
+            <p class="md-mail__out" id="md-mail-out" aria-live="off"></p>
+          </div>
+          <div class="md-mail__meters md-mail__foot">
+            <div class="md-meter"><b id="md-m-words">0</b><span>Words drafted</span></div>
+            <div class="md-meter"><b id="md-m-left">0</b><span>Left for you to write</span></div>
+            <div class="md-meter"><b id="md-m-time">0:00</b><span>Your time spent</span></div>
+          </div>
+        </div>
+
+        <p class="md-body" style="max-width:44rem" data-sc-cue="0.88 1 0.08 0">You did not write a word of that. <strong>You taught it once.</strong> Now it answers every email like you.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 4b · THE REST OF THE OS: a rail that travels sideways ═
+       A deck, not a row. The three screens sit on top of one another
+       with the next two just showing behind the front one, and each
+       flips up and away as you scroll to hand over to the one beneath.
+       Marc asked for this over a side-by-side rail and he was right:
+       one card at a time is one idea at a time, and the peek behind
+       tells you there is more coming without splitting your attention.
+
+       Every figure below sits inside a product frame and is illustrative
+       of the interface, not a performance claim about Medira. The real
+       numbers on this page live in the Magnadyne section underneath. -->
+  <section data-sc-act="pin" data-sc-span="3.5" id="md-deck-act">
+    <div data-sc-stage>
+      <div class="md-railwrap">
+        <div class="md-railwrap__head" data-sc-cue="0 1 0 0">
+          <p class="md-label">The rest of it</p>
+          <h2 class="md-h2">One app. However many jobs you have.</h2>
+          <p class="md-body md-railwrap__sub">Six here because six fits on a screen. The number is not the point. Anything you currently pay a separate app for, and anything your team checks in a separate tab, can be pulled into this one.</p>
+        </div>
+
+        <div class="md-deck" id="md-deck">
+
+          <article class="md-card">
+            <header class="md-card__top"><span>Outreach</span><span>This month</span></header>
+            <p class="md-card__lead">It researches the company, writes the first touch, and keeps following up until someone answers.</p>
+            <div class="md-card__figs">
+              <div><b>412</b><span>Contacted</span></div>
+              <div><b>37</b><span>Replied</span></div>
+              <div><b>6</b><span>Signed</span></div>
+            </div>
+            <div class="md-card__bar" aria-hidden="true">
+              <i style="width:46%;background:var(--sc-accent)"></i>
+              <i style="width:22%;background:#4FD8E8"></i>
+              <i style="width:9%;background:#7BE0A8"></i>
+              <i style="width:23%;background:rgba(233,238,245,0.16)"></i>
+            </div>
+            <ul class="md-card__key">
+              <li><i style="background:var(--sc-accent)"></i>Contacted</li>
+              <li><i style="background:#4FD8E8"></i>Replied</li>
+              <li><i style="background:#7BE0A8"></i>Signed</li>
+              <li><i style="background:rgba(233,238,245,0.16)"></i>Closed out</li>
+            </ul>
+            <p class="md-card__foot">Every one of those was researched, written and chased without you opening a tab.</p>
+          </article>
+
+          <article class="md-card">
+            <header class="md-card__top"><span>Command</span><span>Thursday</span></header>
+            <p class="md-card__lead">Banking, payroll, invoicing and the project board land in one place, worked overnight.</p>
+            <div class="md-card__grid">
+              <div class="md-card__stat"><span>Revenue, this month</span><b>$184,200</b><em>+11% on last</em></div>
+              <div class="md-card__stat"><span>Expenses</span><b>$96,410</b><em>Payroll clears Friday</em></div>
+            </div>
+            <div class="md-card__rows">
+              <div class="md-card__row"><span>Two invoices past 30 days</span><b>$14,800</b></div>
+              <div class="md-card__row"><span>Runway at today's burn</span><b>9 months</b></div>
+              <div class="md-card__row md-card__row--flag"><span>Needs your call: renew the Aldridge retainer</span><b>Today</b></div>
+            </div>
+            <p class="md-card__foot">It does not just show you the numbers. It tells you the two things only you can decide.</p>
+          </article>
+
+          <article class="md-card md-card--hero">
+            <header class="md-card__top"><span>Todos</span><span>Made for you</span></header>
+            <p class="md-card__lead">It read the thread, worked out a call was needed, and put it in the diary.</p>
+            <div class="md-card__todo">
+              <div class="md-card__tick" aria-hidden="true"></div>
+              <div>
+                <p class="md-card__todoh">Call with Dana Whitfield, Aldridge Manufacturing</p>
+                <p class="md-card__todom">Thursday 10:00, invite sent, agenda attached</p>
+                <p class="md-card__tag"><i aria-hidden="true"></i>Created from her email. You did not book it.</p>
+              </div>
+            </div>
+            <div class="md-card__chain">
+              <span>Her message arrives</span>
+              <span>It sees a decision is waiting</span>
+              <span>It finds the hour you are both free</span>
+              <span>It sends the invite</span>
+            </div>
+            <p class="md-card__foot">The meeting was on the calendar before you had read the email.</p>
+          </article>
+
+          <article class="md-card">
+            <header class="md-card__top"><span>Hiring</span><span>Open role</span></header>
+            <p class="md-card__lead">Applicants, stages and certifications in one pipeline, moved along without you chasing anyone.</p>
+            <div class="md-card__figs">
+              <div><b>24</b><span>Applied</span></div>
+              <div><b>7</b><span>Screened</span></div>
+              <div><b>2</b><span>Offer out</span></div>
+            </div>
+            <div class="md-card__rows">
+              <div class="md-card__row"><span>Screening call booked with R. Alvarez</span><b>Tue 09:30</b></div>
+              <div class="md-card__row"><span>Two certifications expire this quarter</span><b>Flagged</b></div>
+              <div class="md-card__row md-card__row--flag"><span>Needs your call: approve the offer letter</span><b>Today</b></div>
+            </div>
+            <p class="md-card__foot">It read the CVs, wrote the screening notes, and put the good ones in front of you.</p>
+          </article>
+
+          <article class="md-card">
+            <header class="md-card__top"><span>Payroll</span><span>Cycle 14</span></header>
+            <p class="md-card__lead">Hours, contractors and the run itself, prepared and waiting on one approval from you.</p>
+            <div class="md-card__grid">
+              <div class="md-card__stat"><span>This run</span><b>$48,910</b><em>11 people, 2 contractors</em></div>
+              <div class="md-card__stat"><span>Clears</span><b>Friday</b><em>Prepared Tuesday</em></div>
+            </div>
+            <div class="md-card__rows">
+              <div class="md-card__row"><span>Timesheets reconciled</span><b>All 11</b></div>
+              <div class="md-card__row md-card__row--flag"><span>Needs your call: approve and disburse</span><b>One click</b></div>
+            </div>
+            <p class="md-card__foot">You never open a payroll app. You say yes.</p>
+          </article>
+
+          <article class="md-card md-card--open">
+            <header class="md-card__top"><span>And the rest</span><span>Your stack</span></header>
+            <p class="md-card__lead">These five are examples, not the menu. If it has a login and a number in it, it belongs in here.</p>
+            <div class="md-card__chain">
+              <span>The tool you check every morning</span>
+              <span>The spreadsheet only you understand</span>
+              <span>The dashboard nobody opens any more</span>
+              <span>The thing you keep meaning to cancel</span>
+            </div>
+            <p class="md-card__foot">We connect what you already run. One database underneath, one screen on top, and the tabs stop being your job.</p>
+          </article>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 5 · PROOF ══════════════════════════════════════════ -->
+  <section class="md-sec" id="work">
+    <div class="md-wrap">
+      <div class="md-split" data-sc-in data-sc-stagger="70" style="margin-bottom:clamp(1.8rem,4.5vh,3rem)">
+        <div class="md-split__col">
+          <p class="md-label">In the field</p>
+          <h2 class="md-h2">Magnadyne Solutions</h2>
+        </div>
+        <div class="md-split__col">
+          <p class="md-body">A manufacturers' representative firm running a two person office with more inbound than it could answer. We built their outreach and inbox systems and had them live in three weeks.</p>
+          <p class="md-body">Every message that came in was drafted inside two minutes, in Michael's own voice, close enough that the people replying never knew. It booked his sales meetings off the back of those threads without being asked to.</p>
+          <p class="md-body">Nobody was hired. Nothing was outsourced. The office got its afternoons back.</p>
+        </div>
+      </div>
+      <div class="md-proof" data-sc-in data-sc-stagger="90">
+        <div class="md-proof__cell" data-md-glow>
+          <div class="md-proof__n"><span data-md-count="100">100</span></div>
+          <p>Pitches sent per day, researched and written by the system.</p>
+        </div>
+        <div class="md-proof__cell" data-md-glow>
+          <div class="md-proof__n"><span data-md-count="2">2</span> min</div>
+          <p>From a message landing to a reply drafted in his voice, waiting on his yes.</p>
+        </div>
+        <div class="md-proof__cell" data-md-glow>
+          <div class="md-proof__n"><span data-md-count="3">3</span> weeks</div>
+          <p>From kickoff to a system running on its own.</p>
+        </div>
+        <div class="md-proof__cell" data-md-glow>
+          <div class="md-proof__n"><span data-md-count="24">24</span> / <span data-md-count="7">7</span></div>
+          <p>It keeps working on the nights and weekends you do not.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 6 · HOW IT HOLDS ═══════════════════════════════════ -->
+  <section class="md-sec md-sec--tight" id="how">
+    <div class="md-wrap">
+      <div class="md-sec__head" data-sc-in data-sc-stagger="60" style="margin-bottom:clamp(1.8rem,4.5vh,3rem)">
+        <p class="md-label">How it holds</p>
+        <h2 class="md-h2">It is yours, all the way down.</h2>
+      </div>
+      <div class="md-tri" data-sc-in data-sc-stagger="80">
+        <div class="md-tri__col">
+          <p class="md-label md-label--mute">Your voice</p>
+          <p>Trained on your own sent mail. Not a template, not a persona, not the flat tone every other tool ships with.</p>
+        </div>
+        <div class="md-tri__col">
+          <p class="md-label md-label--mute">Your data</p>
+          <p>The database belongs to you. If we stop working together you keep it, and it keeps running.</p>
+        </div>
+        <div class="md-tri__col">
+          <p class="md-label md-label--mute">Your call</p>
+          <p>Nothing sends without you. Approval stays a human step for as long as you want it to stay one.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 7 · SUPPORT: video and social ══════════════════════ -->
+  <section class="md-sec md-sec--tight">
+    <div class="md-wrap">
+      <div class="md-sec__head" data-sc-in data-sc-stagger="60" style="margin-bottom:clamp(1.6rem,4vh,2.4rem)">
+        <p class="md-label">Also in the room</p>
+        <h2 class="md-h2">The film that makes the writing land.</h2>
+        <p class="md-body">A system that writes beautifully still needs something worth opening. We shoot the piece that carries it: the header on your site, the thirty seconds inside a cold email, the vertical that stops a thumb before anyone has read a word. Shot on real glass, graded properly, and cut to convert rather than to decorate.</p>
+      </div>
+      <div class="md-support" data-sc-in data-sc-stagger="70">
+        <div class="md-support__cell" data-md-glow>
+          <p class="md-label md-label--mute">The brand film</p>
+          <p>Your anchor piece. Lit, shot and graded to the standard the companies above you are already using, then cut for the top of your site and the top of an outreach sequence. One film that makes a small office read as the room it is competing in.</p>
+        </div>
+        <div class="md-support__cell" data-md-glow>
+          <p class="md-label md-label--mute">Vertical cutdowns</p>
+          <p>The same shoot, recut into short vertical pieces that hold in the first second. Built around a hook, a proof and one ask, because a beautiful film nobody finishes converts nothing. Your OS drafts the captions from what you have already published.</p>
+        </div>
+        <div class="md-support__cell" data-md-glow>
+          <p class="md-label md-label--mute">Founder and client on camera</p>
+          <p>You saying the thing a case study cannot, and your clients saying the thing you are not allowed to say about yourself. It is the highest converting asset most businesses never get around to making.</p>
+        </div>
+        <div class="md-support__cell" data-md-glow>
+          <p class="md-label md-label--mute">One look, everywhere</p>
+          <p>The same grade, type and pacing across the site, the deck, the film and the feed. A prospect should not be able to tell which channel they found you through.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 8 · FAQ ════════════════════════════════════════════ -->
+  <section class="md-sec md-sec--tight" id="faq">
+    <div class="md-wrap">
+      <div class="md-sec__head" data-sc-in data-sc-stagger="60" style="margin-bottom:clamp(1.4rem,3.5vh,2.2rem)">
+        <p class="md-label">Questions</p>
+        <h2 class="md-h2">The things people ask on the first call.</h2>
+      </div>
+      <div class="md-faq" data-sc-in data-sc-stagger="50">
+        <details>
+          <summary>What actually is an AI operating system?</summary>
+          <p class="md-faq__a">A database of how your business communicates, plus the automations that read from it and write back into it. It is not a chatbot bolted onto your site. It sits behind your inbox, your outreach and your reporting, and it is the same brain in all three.</p>
+        </details>
+        <details>
+          <summary>Will it really sound like me?</summary>
+          <p class="md-faq__a">That is the part we spend the most time on. We train it on your own sent mail and your real proposals, then you correct the first fifty drafts. After that people stop being able to tell, because there is nothing to tell. The words are yours, sorted and reused.</p>
+        </details>
+        <details>
+          <summary>What do you need from me to build it?</summary>
+          <p class="md-faq__a">Access to your mailbox, a folder of past proposals, and about two hours of your time in week one. After the build we need roughly fifteen minutes a day from you for the first fortnight, spent approving drafts. That approval is the training.</p>
+        </details>
+        <details>
+          <summary>How long until it is running?</summary>
+          <p class="md-faq__a">One system is one to three weeks depending on which one. We build in that order on purpose, so you have something working before you have spent much. Nothing here takes a quarter.</p>
+        </details>
+        <details>
+          <summary>What happens when it gets something wrong?</summary>
+          <p class="md-faq__a">You catch it at approval, because nothing sends without you. You correct the draft, and the correction goes back into the database, so that class of mistake stops happening. Being wrong is how it gets right.</p>
+        </details>
+        <details>
+          <summary>Do I have to replace the tools I already use?</summary>
+          <p class="md-faq__a">No. It sits underneath what you have. If your team lives in a particular inbox, CRM or scheduler, the system reads and writes there rather than asking anyone to move.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 9 · CLOSE ══════════════════════════════════════════ -->
+  <section class="md-sec" id="book">
+    <div class="md-wrap">
+      <div class="md-close" data-sc-in data-sc-stagger="80">
+        <h2 class="md-h2" style="max-width:16ch">Start with one system.</h2>
+        <p class="md-body" style="max-width:40rem">Pick the one that costs you the most hours this week. We will tell you on the call whether it is worth building, including when it is not.</p>
+        <a class="md-pill" href="#book" data-md-book style="margin-top:0.5rem">
+          Book a call
+          <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+
+      <footer class="md-foot">
+        <div class="md-foot__a">
+          <a class="md-nav__mark" href="#top" style="justify-self:start">
+            <svg class="md-nav__glyph" viewBox="0 0 1000 923.5" aria-hidden="true" style="width:24px;height:24px"><path d="M96.3 913.7L7.4 883.9L257.8 117.6L481.6 534.6L488.2 526.9L730.9 7.7L990.2 130.3L949.0 215.5L775.7 136.0L490.1 748.4L486.5 747.9L280.5 360.0L96.3 913.7Z" fill="currentColor"/></svg>
+            <svg class="md-nav__word" viewBox="0 0 1000 259.1" role="img" aria-label="Medira Scaling" style="height:16px"><path d="M532.6 253.9L513.0 252.9L496.1 247.6L477.9 236.0L464.4 221.4L453.9 201.8L448.8 181.0L448.7 156.2L452.7 138.0L460.5 121.1L473.9 104.2L489.6 92.1L505.2 85.4L527.3 82.3L545.6 84.2L563.8 91.9L576.8 102.6L578.0 3.9L614.6 3.2L615.8 3.9L615.8 250.0L578.1 250.1L576.8 233.9L569.0 241.0L557.3 248.0L546.9 251.7L532.6 253.9Z M670.6 54.9L661.5 55.2L653.6 52.6L644.2 41.7L642.6 32.6L644.4 23.4L650.1 15.6L657.6 11.1L666.7 10.0L675.8 12.5L682.7 18.2L686.6 26.0L687.1 35.2L685.3 43.0L678.4 51.3L670.6 54.9Z M259.1 250.6L222.2 250.0L222.2 152.3L220.4 139.3L215.3 130.2L207.0 123.1L199.2 119.4L186.2 117.7L174.5 119.2L165.4 123.3L157.6 130.4L151.9 140.6L150.4 149.7L149.7 250.6L112.6 250.0L112.6 152.3L111.1 140.6L105.7 130.2L97.7 123.2L89.8 119.5L76.8 117.7L63.8 119.4L56.0 123.1L47.9 130.2L42.4 140.6L40.8 153.6L40.8 250.0L3.9 250.6L3.4 85.9L40.4 85.8L41.7 101.5L50.8 93.5L66.4 85.6L79.4 82.7L100.3 83.1L113.3 86.7L123.7 92.0L141.9 108.8L149.7 100.1L160.2 92.1L170.6 86.8L184.9 83.0L213.5 84.1L234.4 93.3L250.4 109.4L256.9 122.4L259.5 134.1L259.1 250.6Z M368.5 254.0L349.0 253.1L335.9 250.2L322.9 245.0L308.6 236.0L293.9 221.4L286.3 209.6L280.7 196.6L276.8 179.7L276.9 156.2L279.5 143.2L285.1 128.9L294.1 114.6L307.3 101.2L319.0 93.2L333.3 86.7L350.3 82.8L367.2 82.5L381.5 84.4L395.8 89.4L408.9 97.3L418.0 105.5L428.8 119.8L435.4 134.1L439.4 151.0L440.2 166.7L437.5 182.2L316.3 182.3L317.5 190.1L324.2 201.4L333.3 210.1L343.8 215.4L359.4 218.5L375.0 217.8L390.6 212.5L404.9 201.4L428.9 225.3L416.7 237.4L403.6 245.3L385.4 251.7L368.5 254.0Z M751.3 250.6L714.2 250.0L714.5 85.9L751.3 85.6L752.6 102.0L765.6 89.5L778.6 84.1L798.2 82.4L815.1 85.7L828.1 93.4L835.3 101.6L812.5 125.2L811.2 126.1L803.4 120.6L795.6 118.1L776.0 119.3L763.0 126.9L754.8 139.3L752.1 153.6L751.3 250.6Z M911.5 253.9L891.9 252.9L869.8 245.1L852.9 232.5L838.2 213.5L829.2 190.1L827.0 169.3L829.1 147.1L835.3 128.9L844.7 113.3L857.2 100.3L871.1 90.7L888.0 84.3L906.2 82.3L924.5 84.2L942.7 91.9L955.7 102.7L957.3 85.9L993.5 85.6L994.6 250.0L957.0 250.3L955.7 233.8L949.2 240.0L936.2 248.0L925.8 251.7L911.5 253.9Z M683.6 250.4L646.2 250.0L647.1 85.6L682.3 85.6L684.0 87.2L683.6 250.4Z M402.6 151.0L398.5 138.0L389.3 126.2L377.6 119.4L360.7 116.8L343.8 119.4L333.3 124.5L321.3 136.7L315.6 149.7L316.4 151.4L402.6 151.0Z M543.6 217.4L561.2 210.0L574.8 194.0L579.9 177.1L578.6 152.3L570.4 135.4L558.6 124.5L540.4 118.2L520.8 119.4L505.2 127.3L493.0 141.9L487.7 157.6L487.8 179.7L494.2 196.6L506.5 210.1L524.7 217.7L543.6 217.4Z M922.4 217.4L940.1 210.0L953.6 194.0L958.9 175.8L957.4 152.3L949.3 135.4L937.5 124.5L919.3 118.3L899.7 119.4L884.1 127.1L871.8 141.9L866.6 157.6L866.9 181.0L874.7 199.2L885.4 210.2L903.6 217.7L922.4 217.4Z" fill="currentColor" fill-rule="evenodd"/></svg>
+          </a>
+          <p class="md-body" style="font-size:0.875rem">An AI operating system for marketing and outreach. We build the database that answers your email in your voice, then we get out of the way.</p>
+          <a class="md-pill" href="#book" data-md-book style="justify-self:start">Book a call</a>
+        </div>
+        <div class="md-foot__b">
+          <a href="#os">The OS</a>
+          <a href="#systems">Systems</a>
+          <a href="#work">Work</a>
+          <a href="#how">How it holds</a>
+          <a href="#faq">FAQ</a>
+          <p class="md-foot__fine" style="margin-top:1.1rem">© 2026 Medira Scaling</p>
+        </div>
+      </footer>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<script>
+
+/* ============================================================================
+   scrollcraft: a scroll-driven interaction runtime
+   ----------------------------------------------------------------------------
+   Vanilla JS. Zero dependencies. Zero DOM generation.
+
+   The engine does NOT build your page. You author real, semantic HTML and mark
+   it up with data-sc-* attributes; the engine reads them and drives them from a
+   single scroll value on a single rAF loop. That is deliberate: a runtime that
+   generates its own DOM from a config object makes every site it touches look
+   identical, which is the failure mode this replaces.
+
+   ---------------------------------------------------------------------------
+   ACTS: the unit of scroll time
+   ---------------------------------------------------------------------------
+     <section data-sc-act="pin" data-sc-span="2.5"> ... </section>
+
+     data-sc-act   scrub | pin | pan | flow   (default: flow)
+     data-sc-clip-map="travel" opts a pinned act OUT of full-life clip mapping.
+                   By DEFAULT a scrub clip is mapped across the stage's entire
+                   on-screen life, not across its pinned travel, because a pinned
+                   stage is visible for a viewport BEFORE the pin begins (sliding
+                   up into view) and a viewport AFTER it ends (sliding off the
+                   top). Mapped to pinned travel, the clip sits on its first
+                   frame through the whole entry and its last frame through the
+                   whole exit: the reader watches a still photograph while the
+                   page moves. Pair it with data-sc-dwell, which moves quickly at
+                   the edges and settles in the middle, so the fast motion lands
+                   on the two slides and the settle lands inside the pin where
+                   the copy is. data-sc-runout is accepted and ignored; it named
+                   the old opt-in for the exit half of this.
+     data-sc-span  viewport-heights of scroll this act owns. Pinned devices only
+                   (scrub/pin/pan). Default 1.5. The engine sets the outer
+                   height and sticks the first .sc-stage / [data-sc-stage] child.
+
+     Every act exposes a normalized progress p (0..1):
+       pinned  p = (y - top) / (height - vh)
+       flow    p = (y + vh - top) / (height + vh)
+     and publishes it as --sc-p on the act element, so CSS can read it too.
+
+   ---------------------------------------------------------------------------
+   DEVICES: what p drives
+   ---------------------------------------------------------------------------
+     data-sc-scrub            on <video>. p scrubs currentTime. Blob-loaded, so
+                              it seeks without needing HTTP range support.
+     data-sc-sequence="a/{i}.webp:120:1"
+                              on <canvas>. p scrubs an image sequence
+                              (path template : frameCount : startIndex).
+     data-sc-pan="0.6"        on a wide rail inside data-sc-act="pan". p drives
+                              horizontal travel. Value = extra travel multiplier.
+     data-sc-parallax="-0.2"  translateY by rate * act-progress * viewport.
+                              Negative = moves up faster than scroll (recedes).
+     data-sc-cue="0.1 0.5"    opacity/rise keyed to p. One value = enter+hold.
+                              Two = enter..leave. Add a third for the hold point.
+     data-sc-kinetic="lines"  lines | words | chars. Splits the element and
+                              staggers its reveal across the cue window.
+     data-sc-reveal="up"      up | down | left | right | iris. clip-path wipe.
+     data-sc-count="0 4200"   number bloom across the cue window. Outside any
+                              act it ticks up once on entry instead, over
+                              data-sc-count-ms (default 1400).
+     data-sc-in               flow-section reveal, fires once on entry via
+                              IntersectionObserver (cheaper, and content that
+                              re-hides on scroll-up is a defect, not an effect).
+                              data-sc-stagger="60" on the parent staggers kids.
+     data-sc-drift="#07090c"  page background interpolates toward this colour
+                              while the act is on screen.
+
+   ---------------------------------------------------------------------------
+   WORLDFLIGHT: the page mode for one continuous flight
+   ---------------------------------------------------------------------------
+     <div data-sc-mode="worldflight" data-sc-seam="0.12">
+       <div data-sc-world>
+         <div data-sc-segment data-sc-w="1.4" data-sc-linger="0.3"
+              data-sc-waypoint="Approach">
+           <img class="sc-world__poster" src="p1.webp" alt="">
+           <video data-sc-src="leg1.mp4" data-sc-src-mobile="leg1-m.mp4"></video>
+         </div>
+         ... more segments, in flight order ...
+       </div>
+       <div data-sc-world-copy>
+         <div class="sc-world__scrim sc-scrim sc-scrim--band"></div>
+         <div data-sc-copy data-sc-window="hero"> ... </div>
+         <div data-sc-copy data-sc-window="0.34 0.56"> ... </div>
+         <div data-sc-copy data-sc-window="finale"> ... </div>
+       </div>
+       <div data-sc-spacer aria-hidden="true"></div>
+     </div>
+
+   Acts cut the page into pinned blocks, which is the right shape for a page of
+   chapters and the wrong shape for one continuous camera move: the reader hits
+   the end of an act, the stage unsticks, a static page slides past, and the next
+   act starts the whole thing again. Worldflight removes the seams by removing
+   the blocks. There is ONE fixed stage for the entire page. The only element in
+   document flow is a spacer, whose height the engine sets to the sum of the
+   segment weights plus one viewport so the last flight can finish. Scroll drives
+   the film timeline and the overlay opacity. Nothing else moves.
+
+     data-sc-w        viewport-heights this segment owns. Default 1.3.
+     data-sc-linger   dwell remap for this leg only (see lingerEase). Max 0.6.
+     data-sc-seam     crossfade band, in viewport-heights of scroll. Default 0.12.
+     data-sc-waypoint label published on --sc-seg / the sc:waypoint event, so a
+                      page can draw its own route rail. The engine draws none.
+     data-sc-window   on a copy block: "hero" | "finale" | "from to [in [out]]"
+                      as fractions of the WHOLE track.
+
+   Every clip stays mounted for the life of the page. Segments crossfade by
+   opacity over the seam band; nothing ever swaps a src, because a src swap is a
+   black frame and a black frame is the cut this mode exists to avoid.
+
+   ---------------------------------------------------------------------------
+   POINTER: interactivity that isn't scroll
+   ---------------------------------------------------------------------------
+     data-sc-tilt="8"         3D tilt toward the pointer, spring-damped, degrees.
+     data-sc-magnet="0.35"    element drifts toward the pointer inside its bounds.
+     data-sc-spotlight        publishes --sc-mx/--sc-my (0..1) for a light that
+                              follows the pointer across the surface.
+   All three are gated to (hover: hover) and (pointer: fine) and disabled under
+   prefers-reduced-motion. Touch never fires them.
+
+   ---------------------------------------------------------------------------
+   REDUCED MOTION
+   ---------------------------------------------------------------------------
+   Fewer and gentler, not zero. Cues still fade (comprehension survives), but
+   translation collapses, video clips are never fetched (the poster holds), and
+   pointer devices are inert. A worldflight still tells its whole story: the
+   posters cross-dissolve through the same seams and the same copy windows.
+
+   ---------------------------------------------------------------------------
+   THE PLAYHEAD
+   ---------------------------------------------------------------------------
+   Every scrub clip on the page, act or worldflight, is driven by one smoothed
+   playhead. Scroll only ever writes a TARGET; a standalone rAF loop walks the
+   current time toward it at a fixed fraction per frame (data-sc-lerp, default
+   0.18; 1.0 under reduced motion, which is no smoothing at all). Writes are
+   gated by a deadband and skipped while the decoder is still seeking. Without
+   the smoothing a trackpad flick reads as a stutter, because wheel events do
+   not arrive at a constant rate and a 1:1 write reproduces every gap in them.
+   ========================================================================== */
+
+(function (global) {
+  'use strict';
+
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fineMQ = matchMedia('(hover: hover) and (pointer: fine)');
+  var smallMQ = matchMedia('(max-width: 860px)');
+  var coarse = matchMedia('(hover: none) and (pointer: coarse)').matches;
+  var isMobile = function () { return coarse || smallMQ.matches; };
+
+  var clamp = function (x, a, b) { return x < a ? a : x > b ? b : x; };
+  var clamp01 = function (x) { return clamp(x, 0, 1); };
+  var smooth = function (x) { x = clamp01(x); return x * x * (3 - 2 * x); };
+  var lerp = function (a, b, t) { return a + (b - a) * t; };
+
+  // Monotone dwell remap. Settles the camera mid-act (where the copy peaks) and
+  // moves quicker at the edges. f(0)=0 and f(1)=1 always, so seam frames between
+  // consecutive clips are untouched and the chain stays invisible.
+  function dwell(x, L) {
+    if (!L) return x;
+    L = clamp01(L);
+    var c = x - 0.5;
+    return (1 - L) * x + L * (4 * c * c * c + 0.5);
+  }
+
+  // Same curve, capped harder, and used per worldflight segment. Above ~0.6 the
+  // derivative at the midpoint gets low enough that the camera visibly stops
+  // dead mid-leg, which reads as a stall rather than a hold. The endpoints are
+  // fixed by construction: f(0)=0, f(1)=1, so the first and last frames of every
+  // leg are still exactly the frames the seam law matched, and the chain between
+  // legs stays invisible no matter how much dwell a leg asks for.
+  function lingerEase(x, L) {
+    if (!L) return x;
+    L = clamp(L, 0, 0.6);
+    var c = x - 0.5;
+    return (1 - L) * x + L * (4 * c * c * c + 0.5);
+  }
+
+  // The lerp is a mechanism, not a taste knob. It is exposed so a page whose
+  // clips are unusually short (where 0.18 lags behind the pointer) can tighten
+  // it, and it is never read as 0: a 0 lerp is a playhead that never moves.
+  function lerpRate(el) {
+    var v = parseFloat(el && el.getAttribute && el.getAttribute('data-sc-lerp'));
+    return isNaN(v) || v <= 0 ? 0 : clamp(v, 0.02, 1);
+  }
+
+  // ---- colour -------------------------------------------------------------
+  function parseColor(str) {
+    str = (str || '').trim();
+    var m = str.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+    if (m) {
+      var h = m[1];
+      if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+      return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+    }
+    m = str.match(/rgba?\(([^)]+)\)/i);
+    if (m) {
+      var p = m[1].split(/[,\s/]+/).filter(Boolean).map(parseFloat);
+      return [p[0], p[1], p[2]];
+    }
+    return null;
+  }
+  function mixColor(a, b, t) {
+    return 'rgb(' + Math.round(lerp(a[0], b[0], t)) + ',' +
+                    Math.round(lerp(a[1], b[1], t)) + ',' +
+                    Math.round(lerp(a[2], b[2], t)) + ')';
+  }
+
+  // ---- text splitting -----------------------------------------------------
+  // Wraps each unit in a masked span so the reveal can slide from behind a clean
+  // edge instead of just fading. Lines are measured after layout, so this must
+  // run once fonts are ready or the line boxes are wrong.
+  function splitText(el, mode) {
+    if (el.__scSplit) return el.__scSplit;
+    var text = el.textContent;
+    var units = [];
+
+    if (mode === 'chars' || mode === 'words') {
+      var parts = mode === 'chars' ? Array.from(text) : text.split(/(\s+)/);
+      el.textContent = '';
+      parts.forEach(function (t) {
+        if (/^\s+$/.test(t)) { el.appendChild(document.createTextNode(t)); return; }
+        var mask = document.createElement('span');
+        mask.className = 'sc-split';
+        var inner = document.createElement('span');
+        inner.className = 'sc-split__i';
+        inner.textContent = t;
+        mask.appendChild(inner);
+        el.appendChild(mask);
+        units.push(inner);
+      });
+    } else {
+      // lines: wrap every word, measure offsetTop, regroup words into line spans
+      var words = text.split(/\s+/).filter(Boolean);
+      el.textContent = '';
+      var probes = words.map(function (w, i) {
+        var s = document.createElement('span');
+        s.textContent = w;
+        el.appendChild(s);
+        if (i < words.length - 1) el.appendChild(document.createTextNode(' '));
+        return s;
+      });
+      var lines = [], cur = null, lastTop = null;
+      probes.forEach(function (s) {
+        var top = s.offsetTop;
+        if (lastTop === null || Math.abs(top - lastTop) > 1) { cur = []; lines.push(cur); lastTop = top; }
+        cur.push(s.textContent);
+      });
+      el.textContent = '';
+      lines.forEach(function (words, li) {
+        var mask = document.createElement('span');
+        mask.className = 'sc-split sc-split--line';
+        var inner = document.createElement('span');
+        inner.className = 'sc-split__i';
+        inner.textContent = words.join(' ');
+        mask.appendChild(inner);
+        el.appendChild(mask);
+        // Whitespace between the line spans. Without it the line boxes abut in
+        // the text layer, so selecting and copying the heading yields
+        // "even whenbreakfast" and a screen reader hears the same.
+        if (li < lines.length - 1) el.appendChild(document.createTextNode(' '));
+        units.push(inner);
+      });
+    }
+    el.classList.add('sc-is-split');
+    el.__scSplit = units;
+    return units;
+  }
+
+  // ---- number formatting --------------------------------------------------
+  function formatNum(v, template) {
+    var decimals = 0;
+    var dot = template.indexOf('.');
+    if (dot > -1) decimals = template.length - dot - 1;
+    var s = v.toFixed(decimals);
+    if (/,/.test(template) || Math.abs(v) >= 10000) {
+      var bits = s.split('.');
+      bits[0] = bits[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      s = bits.join('.');
+    }
+    return s;
+  }
+
+  // =========================================================================
+  function mount(root, opts) {
+    root = typeof root === 'string' ? document.querySelector(root) : (root || document);
+    opts = opts || {};
+
+    var acts = [];
+    var worlds = [];
+    var drifts = [];
+    var playheads = [];
+    var scrollEls = [];
+    var vh = innerHeight, vw = innerWidth;
+    var y = 0, needsLayout = true;
+    var progressBar = root.querySelector('[data-sc-progress]');
+    var docEl = document.documentElement;
+
+    // One rate for the page, overridable per clip. Read from the mount root, the
+    // document element, or the option bag, in that order.
+    var LERP = lerpRate(root.nodeType === 1 ? root : null) ||
+               lerpRate(docEl) ||
+               (opts.lerp > 0 ? clamp(opts.lerp, 0.02, 1) : 0) ||
+               0.18;
+
+    // Every scrub clip on the page lives here, whatever drives it. tick() walks
+    // this one list, so an act clip and a worldflight leg get the same playhead.
+    function makeClip(v, host) {
+      var rec = {
+        el: v, host: host || v,
+        ready: false, loading: false, painted: false,
+        cur: 0, target: 0, live: false, stuckAt: 0,
+        lerp: lerpRate(v) || LERP
+      };
+      v.muted = true; v.playsInline = true; v.preload = 'none';
+      v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
+      playheads.push(rec);
+      return rec;
+    }
+
+    // ---- collect acts -----------------------------------------------------
+    Array.prototype.forEach.call(root.querySelectorAll('[data-sc-act]'), function (el) {
+      var device = el.getAttribute('data-sc-act') || 'flow';
+      var pinned = device === 'scrub' || device === 'pin' || device === 'pan';
+      var act = {
+        el: el,
+        device: device,
+        pinned: pinned,
+        span: parseFloat(el.getAttribute('data-sc-span')) || (pinned ? 1.5 : 0),
+        dwell: parseFloat(el.getAttribute('data-sc-dwell')) || 0,
+        clipTravel: pinned && el.getAttribute('data-sc-clip-map') === 'travel',
+        p: 0, raw: 0, top: 0, height: 0, live: false,
+        cues: [], parallax: [], reveals: [], counts: [],
+        video: null, seq: null, rail: null
+      };
+
+      if (pinned) {
+        act.stage = el.querySelector('[data-sc-stage]') || el.querySelector('.sc-stage');
+        if (act.stage) act.stage.classList.add('sc-stage');
+        el.classList.add('sc-act--pinned');
+      }
+
+      // scrub video
+      var v = el.querySelector('video[data-sc-scrub]');
+      if (v) act.video = makeClip(v, el);
+
+      // image sequence
+      var cv = el.querySelector('canvas[data-sc-sequence]');
+      if (cv) {
+        var spec = cv.getAttribute('data-sc-sequence').split(':');
+        act.seq = {
+          el: cv, ctx: cv.getContext('2d', { alpha: false }),
+          tpl: spec[0], count: parseInt(spec[1], 10) || 1, start: parseInt(spec[2], 10) || 0,
+          frames: [], loaded: 0, drawn: -1
+        };
+      }
+
+      // horizontal rail
+      act.rail = el.querySelector('[data-sc-pan]');
+      if (act.rail) act.railExtra = parseFloat(act.rail.getAttribute('data-sc-pan')) || 0;
+
+      // cues
+      Array.prototype.forEach.call(el.querySelectorAll('[data-sc-cue]'), function (c) {
+        var nums = (c.getAttribute('data-sc-cue') || '').trim().split(/\s+/).map(parseFloat);
+        // from [to [rampIn [rampOut]]]
+        // rampIn/rampOut are fractions OF THE WINDOW, defaulting to 0.3 each.
+        // That leaves a ~40% plateau at full opacity in the middle. Without a
+        // plateau a cue is a triangle: it touches opacity 1 for a single
+        // instant, so the reader has to stop on exactly the right pixel to see
+        // the line at full strength, and every heading reads as slightly faded.
+        var cue = {
+          el: c,
+          from: isNaN(nums[0]) ? 0 : nums[0],
+          to: nums.length > 1 && !isNaN(nums[1]) ? nums[1] : null,
+          rIn: nums.length > 2 && !isNaN(nums[2]) ? clamp01(nums[2]) : 0.3,
+          rOut: nums.length > 3 && !isNaN(nums[3]) ? clamp01(nums[3]) : null,
+          rise: parseFloat(c.getAttribute('data-sc-rise')),
+          kinetic: c.getAttribute('data-sc-kinetic'),
+          units: null, state: -1
+        };
+        if (cue.rOut === null) cue.rOut = (nums.length > 2 && !isNaN(nums[2])) ? 0.3 : 0.3;
+        if (isNaN(cue.rise)) cue.rise = 1;
+        act.cues.push(cue);
+      });
+
+      // parallax
+      Array.prototype.forEach.call(el.querySelectorAll('[data-sc-parallax]'), function (c) {
+        act.parallax.push({ el: c, rate: parseFloat(c.getAttribute('data-sc-parallax')) || 0 });
+      });
+
+      // reveals
+      Array.prototype.forEach.call(el.querySelectorAll('[data-sc-reveal]'), function (c) {
+        var nums = (c.getAttribute('data-sc-reveal-at') || '0 0.5').trim().split(/\s+/).map(parseFloat);
+        act.reveals.push({ el: c, dir: c.getAttribute('data-sc-reveal') || 'up', from: nums[0] || 0, to: nums[1] || 0.5 });
+      });
+
+      // counters
+      Array.prototype.forEach.call(el.querySelectorAll('[data-sc-count]'), function (c) {
+        var nums = (c.getAttribute('data-sc-count') || '').trim().split(/\s+/);
+        var at = (c.getAttribute('data-sc-count-at') || '0.1 0.55').trim().split(/\s+/).map(parseFloat);
+        // Strip separators before parsing so the author can write the target
+        // exactly as it should render. Without this, "0 3,500" parses the target
+        // as 3 (the comma stops parseFloat) and "0 3500" renders "3500", because
+        // formatNum only adds separators above 10,000. So any real figure between
+        // 1,000 and 9,999 could not be shown the way it is written everywhere
+        // else on the page. The template still drives the formatting.
+        var num = function (s) { return parseFloat(String(s).replace(/,/g, '')) || 0; };
+        act.counts.push({
+          el: c, a: num(nums[0]), b: num(nums[1]),
+          tpl: nums[1] || '0', from: at[0], to: at[1], last: null
+        });
+      });
+
+      acts.push(act);
+
+      var d = el.getAttribute('data-sc-drift');
+      if (d) { var rgb = parseColor(d); if (rgb) drifts.push({ act: act, rgb: rgb }); }
+    });
+
+    // ---- collect worldflights --------------------------------------------
+    Array.prototype.forEach.call(root.querySelectorAll('[data-sc-mode="worldflight"]'), function (el) {
+      var W = {
+        el: el,
+        stage: el.querySelector('[data-sc-world]') || el.querySelector('.sc-world'),
+        copyLayer: el.querySelector('[data-sc-world-copy]') || el.querySelector('.sc-world__copy'),
+        spacer: el.querySelector('[data-sc-spacer]') || el.querySelector('.sc-world__spacer'),
+        seam: 0, segs: [], copies: [], total: 0, top: 0, index: -1, checked: false
+      };
+      var seam = parseFloat(el.getAttribute('data-sc-seam'));
+      // A seam wider than the shortest leg would have three clips dissolving at
+      // once and no leg ever fully present. Cap it well under that.
+      W.seam = isNaN(seam) || seam <= 0 ? 0.12 : clamp(seam, 0.02, 0.4);
+      if (W.stage) W.stage.classList.add('sc-world');
+      if (W.copyLayer) W.copyLayer.classList.add('sc-world__copy');
+      if (W.spacer) W.spacer.classList.add('sc-world__spacer');
+
+      Array.prototype.forEach.call(el.querySelectorAll('[data-sc-segment]'), function (s) {
+        var seg = {
+          el: s,
+          w: parseFloat(s.getAttribute('data-sc-w')) || 1.3,
+          linger: clamp(parseFloat(s.getAttribute('data-sc-linger')) || 0, 0, 0.6),
+          label: s.getAttribute('data-sc-waypoint') || '',
+          poster: s.querySelector('[data-sc-poster]') || s.querySelector('.sc-world__poster') || s.querySelector('img'),
+          c0: 0, c1: 0, local: 0, op: -1, z: -1, clip: null
+        };
+        s.classList.add('sc-world__seg');
+        if (seg.poster) seg.poster.classList.add('sc-world__poster');
+        var v = s.querySelector('video');
+        if (v) {
+          // Mark it as a scrub clip whether or not the author did. Everything
+          // downstream, the stylesheet and the verification harness included,
+          // finds scrub media by this attribute.
+          v.setAttribute('data-sc-scrub', '');
+          seg.clip = makeClip(v, s);
+        }
+        W.segs.push(seg);
+      });
+
+      var run = 0;
+      W.segs.forEach(function (s) { s.c0 = run; run += Math.max(s.w, 0.1); s.c1 = run; });
+      W.total = Math.max(run, 0.001);
+
+      Array.prototype.forEach.call(el.querySelectorAll('[data-sc-copy]'), function (cEl) {
+        var spec = (cEl.getAttribute('data-sc-window') || '').trim();
+        var q = { el: cEl, from: 0, to: 1, rIn: 0.3, rOut: 0.3, state: -1 };
+        var first = W.segs[0], last = W.segs[W.segs.length - 1];
+        if (spec === 'hero') {
+          // Present the instant the reader lands. A hero that fades IN has to
+          // fade in from nothing over an empty first screen, which is the one
+          // moment on the page where there is nothing else to look at.
+          q.from = 0;
+          q.to = first ? (0.62 * first.w) / W.total : 0.3;
+          q.rIn = 0; q.rOut = 0.65;
+        } else if (spec === 'finale') {
+          q.from = last ? (last.c0 + 0.4 * last.w) / W.total : 0.7;
+          q.to = 1; q.rIn = 0.55; q.rOut = 0;
+        } else {
+          var n = spec.split(/\s+/).map(parseFloat);
+          q.from = isNaN(n[0]) ? 0 : clamp01(n[0]);
+          q.to = (n.length > 1 && !isNaN(n[1])) ? clamp01(n[1]) : clamp01(q.from + 0.18);
+          if (n.length > 2 && !isNaN(n[2])) q.rIn = clamp01(n[2]);
+          if (n.length > 3 && !isNaN(n[3])) q.rOut = clamp01(n[3]);
+        }
+        if (q.to <= q.from) q.to = clamp01(q.from + 0.05);
+        W.copies.push(q);
+      });
+
+      worlds.push(W);
+    });
+
+    // ---- flow reveals (fire once) ----------------------------------------
+    var io = null;
+    if ('IntersectionObserver' in window) {
+      io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          var el = e.target;
+          el.classList.add('sc-in');
+          var stagger = parseFloat(el.getAttribute('data-sc-stagger'));
+          if (!isNaN(stagger)) {
+            Array.prototype.forEach.call(el.children, function (kid, i) {
+              kid.style.transitionDelay = (i * stagger) + 'ms';
+              kid.classList.add('sc-in');
+            });
+          }
+          io.unobserve(el);
+        });
+      }, { rootMargin: '0px 0px -12% 0px', threshold: 0.01 });
+      Array.prototype.forEach.call(root.querySelectorAll('[data-sc-in]'), function (el) { io.observe(el); });
+    } else {
+      Array.prototype.forEach.call(root.querySelectorAll('[data-sc-in]'), function (el) { el.classList.add('sc-in'); });
+    }
+
+    // ---- entry counters (fire once) --------------------------------------
+    // A [data-sc-count] outside any pinned act is not scrubbed by scroll; it
+    // ticks up once when it enters view, over data-sc-count-ms (default 1400).
+    // Same formatting rules as the act counter: write the target as it should
+    // render. Reduced motion writes the final value and never animates.
+    (function () {
+      var ease = function (t) { return 1 - Math.pow(1 - t, 3); };
+      var num = function (s) { return parseFloat(String(s).replace(/,/g, '')) || 0; };
+      var spec = function (c) { return (c.getAttribute('data-sc-count') || '').trim().split(/\s+/); };
+      var els = Array.prototype.filter.call(root.querySelectorAll('[data-sc-count]'), function (c) {
+        return !c.closest('[data-sc-act]');
+      });
+      if (!els.length) return;
+      function run(c) {
+        var nums = spec(c);
+        var a = num(nums[0]), b = num(nums[1]), tpl = nums[1] || '0';
+        var ms = parseFloat(c.getAttribute('data-sc-count-ms')) || 1400;
+        if (reduce || ms <= 0) { c.textContent = formatNum(b, tpl); return; }
+        var t0 = null, last = null;
+        function frame(now) {
+          if (t0 === null) t0 = now;
+          var t = Math.min((now - t0) / ms, 1);
+          var out = formatNum(a + (b - a) * ease(t), tpl);
+          if (out !== last) { c.textContent = out; last = out; }
+          if (t < 1) requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+      }
+      els.forEach(function (c) { var n = spec(c); c.textContent = formatNum(num(n[0]), n[1] || '0'); });
+      if ('IntersectionObserver' in window) {
+        var cio = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (!e.isIntersecting) return;
+            run(e.target); cio.unobserve(e.target);
+          });
+        }, { rootMargin: '0px 0px -10% 0px', threshold: 0.5 });
+        els.forEach(function (c) { cio.observe(c); });
+      } else {
+        els.forEach(run);
+      }
+    })();
+
+    // ---- layout -----------------------------------------------------------
+    function layout() {
+      vh = innerHeight; vw = innerWidth;
+      acts.forEach(function (a) {
+        if (a.pinned) a.el.style.height = (a.span * 100) + 'vh';
+      });
+      // The spacer is the whole document flow of a worldflight. Its height is
+      // the sum of the leg weights plus one viewport: without that extra screen
+      // the track runs out at the moment the last leg reaches p=1, so the last
+      // leg's final second is a place the reader can never actually stop.
+      // Set in pixels, not vh, because .sc-world is sized in svh on phones and a
+      // vh/svh mismatch would put the track and the stage on different rulers.
+      worlds.forEach(function (W) {
+        if (W.spacer) W.spacer.style.height = Math.round((W.total + 1) * vh) + 'px';
+      });
+      acts.forEach(function (a) {
+        var r = a.el.getBoundingClientRect();
+        a.top = r.top + scrollY;
+        a.height = r.height;
+      });
+      if (acts.length) {
+        acts.forEach(function (a) {
+          if (a.seq && a.seq.el) {
+            var box = a.seq.el.getBoundingClientRect();
+            var dpr = Math.min(devicePixelRatio || 1, 2);
+            a.seq.el.width = Math.round(box.width * dpr);
+            a.seq.el.height = Math.round(box.height * dpr);
+            a.seq.drawn = -1;
+          }
+        });
+      }
+      // A pinned act whose stage is not actually sticky fails silently: the
+      // stage just scrolls by, the copy cues correctly against a frame nobody
+      // can see, and every automated check passes. Any author rule that sets
+      // `position` on the stage causes it. Say so.
+      acts.forEach(function (a) {
+        if (!a.pinned || !a.stage || a.stageChecked) return;
+        a.stageChecked = true;
+        var pos = getComputedStyle(a.stage).position;
+        if (pos !== 'sticky' && pos !== '-webkit-sticky') {
+          console.warn('[scrollcraft] act "' + (a.el.id || a.device) + '" will not pin: its stage computes ' +
+            'position:' + pos + ', not sticky. Something is overriding .sc-stage.', a.stage);
+        }
+      });
+
+      worlds.forEach(function (W) {
+        W.top = W.el.getBoundingClientRect().top + scrollY;
+        if (W.checked) return;
+        W.checked = true;
+        if (!W.stage) {
+          console.warn('[scrollcraft] worldflight has no [data-sc-world] stage; nothing will fly.', W.el);
+          return;
+        }
+        if (!W.spacer) {
+          console.warn('[scrollcraft] worldflight has no [data-sc-spacer]; the page has no scroll track.', W.el);
+        }
+        // The same silent failure as an unpinned act, one level worse: a stage
+        // that is not fixed scrolls away and takes the whole page with it, while
+        // every progress number still reads correctly.
+        var wp = getComputedStyle(W.stage).position;
+        if (wp !== 'fixed') {
+          console.warn('[scrollcraft] worldflight stage computes position:' + wp + ', not fixed. ' +
+            'Something is overriding .sc-world, and the flight will scroll off screen.', W.stage);
+        }
+      });
+
+      needsLayout = false;
+      read();
+    }
+
+    // ---- video ------------------------------------------------------------
+    function loadVideo(a) { loadClip(a.video); }
+    function loadClip(V) {
+      // Under reduced motion the clip is never fetched. The poster holds the
+      // frame and the copy still cues, so the page reads without the decode.
+      if (reduce || !V || V.loading) return;
+      var src = V.el.getAttribute('data-sc-src') ||
+                (isMobile() && V.el.getAttribute('data-sc-src-mobile')) ||
+                V.el.currentSrc || V.el.src;
+      if (isMobile() && V.el.getAttribute('data-sc-src-mobile')) src = V.el.getAttribute('data-sc-src-mobile');
+      if (!src) return;
+      V.loading = true;
+      fetch(src).then(function (r) { if (!r.ok) throw new Error(r.status); return r.blob(); })
+        .then(function (blob) {
+          // Listeners and preload BEFORE src. Assigning src starts the load, so
+          // attaching afterwards and then calling load() restarts it and aborts
+          // the first request (visible as ERR_ABORTED on the blob URL).
+          V.el.addEventListener('loadedmetadata', function () {
+            V.ready = true;
+            // Force one seek even when the target is already 0. The reveal is
+            // gated on a 'seeked' event, and the raf loop only seeks when the
+            // time actually needs to change, so a clip sitting at the very top
+            // of its act would never seek, never fire 'seeked', and never
+            // replace its poster until the reader scrolled it off zero.
+            try { V.el.currentTime = Math.max(V.target * (V.el.duration || 1), 0.001); } catch (e) {}
+            read();
+            // Prime the decoder the moment the clip can be primed, without
+            // waiting for a gesture. A muted inline play() is allowed with no
+            // user activation on every platform except a restricted one (Low
+            // Power Mode, data saver), and there the rejection is harmless: the
+            // gesture listeners below retry on the next real touch.
+            primeClip(V);
+          });
+          // Reveal only once a real frame has painted. iOS keeps a seeked-but-
+          // never-played muted video blank, so hiding the poster on metadata
+          // alone flashes an empty stage.
+          var reveal = function () {
+            if (V.painted) return;
+            V.painted = true;
+            V.host.classList.add('sc-has-clip');
+            V.el.classList.add('sc-has-clip');
+          };
+          V.el.addEventListener('seeked', reveal, { once: true });
+          // Never let visibility depend only on an event that may not arrive.
+          // On iOS a clip that has not been played can accept a seek and never
+          // fire 'seeked', which leaves the element at opacity 0 for the life of
+          // the page: the poster stays up, the act looks frozen, and every later
+          // act is fine because by then the reader has touched the screen and
+          // the decoder is live. Reveal on a timer as well. A stage that is
+          // briefly blank is a smaller fault than one that never shows its clip.
+          setTimeout(reveal, 2500);
+          V.el.preload = 'auto';
+          V.el.muted = true;            // as a property, not only an attribute
+          V.el.playsInline = true;
+          V.el.src = URL.createObjectURL(blob);
+        })
+        .catch(function () { V.loading = false; });
+    }
+
+    // ---- image sequence ---------------------------------------------------
+    function loadSeq(a) {
+      var S = a.seq;
+      if (!S || S.frames.length) return;
+      for (var i = 0; i < S.count; i++) {
+        (function (i) {
+          var img = new Image();
+          img.decoding = 'async';
+          img.src = S.tpl.replace('{i}', String(S.start + i))
+                         .replace('{ii}', String(S.start + i).padStart(2, '0'))
+                         .replace('{iii}', String(S.start + i).padStart(3, '0'))
+                         .replace('{iiii}', String(S.start + i).padStart(4, '0'));
+          img.onload = function () { S.loaded++; if (S.loaded === 1) S.drawn = -1; };
+          S.frames[i] = img;
+        })(i);
+      }
+    }
+    function drawSeq(a) {
+      var S = a.seq;
+      if (!S || !S.frames.length) return;
+      var idx = clamp(Math.round(a.p * (S.count - 1)), 0, S.count - 1);
+      if (idx === S.drawn) return;
+      var img = S.frames[idx];
+      if (!img || !img.complete || !img.naturalWidth) return;
+      var cw = S.el.width, ch = S.el.height;
+      // cover fit
+      var scale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
+      var w = img.naturalWidth * scale, h = img.naturalHeight * scale;
+      S.ctx.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
+      S.drawn = idx;
+    }
+
+    // ---- worldflight ------------------------------------------------------
+    // t is the position along the flight, measured in viewport-heights of
+    // scroll, so every number here is in the same unit the author wrote the
+    // weights in. There is no per-segment geometry to read: the stage never
+    // moves, so nothing needs measuring on scroll.
+    function readWorld(W) {
+      if (!W.segs.length) return;
+      var S = W.seam;
+      var t = clamp((y - W.top) / Math.max(vh, 1), 0, W.total);
+      var pr = t / W.total;
+      var i, s;
+
+      // The current leg is the last one whose crossfade has begun.
+      var k = 0;
+      for (i = 0; i < W.segs.length; i++) if (t >= W.segs[i].c0 - S / 2) k = i;
+
+      for (i = 0; i < W.segs.length; i++) {
+        s = W.segs[i];
+        var local = clamp01((t - s.c0) / Math.max(s.w, 0.001));
+        s.local = local;
+
+        // Fetch a leg only while it is within reach. Loading the whole flight up
+        // front is tens of megabytes before the first frame paints; loading it
+        // on arrival means arriving at a poster.
+        if (s.clip && t > s.c0 - 1.6 && t < s.c1 + 1.6) loadClip(s.clip);
+
+        // Opacity. The incoming leg fades UP over the outgoing one, which holds
+        // at full strength underneath until it is completely covered. Fading
+        // both halves of a crossfade is what puts the page ground through the
+        // middle of the seam and reads as a flash.
+        var op;
+        if (i > k) op = 0;
+        else if (i === k) op = i === 0 ? 1 : smooth((t - (s.c0 - S / 2)) / S);
+        else op = t < s.c1 + S / 2 ? 1 : 0;
+
+        var z = i === k ? 120 : Math.round(100 + op * 10);
+        if (op !== s.op) {
+          s.el.style.opacity = op.toFixed(3);
+          // A leg at zero must stop compositing entirely. Six full-bleed video
+          // layers all painting at opacity 0 costs the same as painting them.
+          s.el.style.visibility = op > 0.002 ? 'visible' : 'hidden';
+          s.op = op;
+        }
+        if (z !== s.z) { s.el.style.zIndex = String(z); s.z = z; }
+
+        if (s.clip) {
+          s.clip.live = op > 0.002;
+          s.clip.target = lingerEase(local, s.linger);
+        }
+        // Until a real frame has painted, the poster carries the move. A still
+        // that sits perfectly still while the page scrolls announces itself as a
+        // placeholder; a slow push in reads as the camera already flying.
+        if (s.poster && !reduce && !(s.clip && s.clip.painted) && op > 0.002) {
+          s.poster.style.transform = 'scale(' + (1.03 + local * 0.14).toFixed(4) + ')';
+        }
+      }
+
+      for (var c = 0; c < W.copies.length; c++) {
+        var q = W.copies[c];
+        var win = Math.max(q.to - q.from, 0.001);
+        var inEnd = q.from + win * q.rIn;
+        var outStart = q.to - win * q.rOut;
+        var vis;
+        // A hero declares rIn 0, so inEnd sits exactly on `from` and the ramp
+        // branch is skipped: the block is simply present from the first pixel.
+        if (pr < q.from) vis = 0;
+        else if (pr < inEnd) vis = smooth((pr - q.from) / Math.max(inEnd - q.from, 0.001));
+        else if (pr <= outStart) vis = 1;
+        else vis = smooth(1 - (pr - outStart) / Math.max(q.to - outStart, 0.001));
+        vis = clamp01(vis);
+
+        // The ONLY transform on the copy side, and it is capped at 4vh across
+        // the whole window. Anything larger stops reading as a parallax layer
+        // over a moving world and starts reading as a second page scrolling at a
+        // different speed, which is the exact cheapness this mode replaces.
+        var wp = clamp01((pr - q.from) / win);
+        q.el.style.opacity = vis.toFixed(3);
+        q.el.style.transform = reduce ? 'none'
+          : 'translate3d(0,' + ((0.5 - wp) * 4).toFixed(2) + 'vh,0)';
+        var on = vis > 0.5;
+        if (on !== (q.state === 1)) { q.state = on ? 1 : 0; q.el.style.pointerEvents = on ? 'auto' : 'none'; }
+      }
+
+      // Publish the route, draw none of it. A gauge, a map, a leg counter and a
+      // set of chapter dots are all the same two numbers, and a runtime that
+      // ships one of them ships it to every page that uses this mode.
+      var cur = W.segs[k];
+      W.el.style.setProperty('--sc-seg', String(k));
+      W.el.style.setProperty('--sc-segp', cur.local.toFixed(4));
+      docEl.style.setProperty('--sc-seg', String(k));
+      docEl.style.setProperty('--sc-segp', cur.local.toFixed(4));
+      if (k !== W.index) {
+        W.index = k;
+        try {
+          W.el.dispatchEvent(new CustomEvent('sc:waypoint', {
+            bubbles: true,
+            detail: { index: k, count: W.segs.length, label: cur.label, el: cur.el, progress: pr }
+          }));
+        } catch (e) {}
+      }
+    }
+
+    // ---- per-frame scroll read -------------------------------------------
+    function read() {
+      y = scrollY || pageYOffset;
+      var driftA = null, driftB = null, driftT = 0;
+      var maxY = Math.max((document.documentElement.scrollHeight || 0) - vh, 1);
+
+      for (var i = 0; i < acts.length; i++) {
+        var a = acts[i];
+        var raw;
+        if (a.pinned) {
+          var travel = Math.max(a.height - vh, 1);
+          raw = clamp01((y - a.top) / travel);
+        } else {
+          raw = clamp01((y + vh - a.top) / (a.height + vh));
+        }
+        a.raw = raw;
+        a.p = a.dwell ? dwell(raw, a.dwell) : raw;
+
+        // Clip time is NOT cue time. Cues belong to the pin, so they keep using
+        // `p`. The clip belongs to the stage, and the stage is on screen for one
+        // viewport before the pin starts and one after it ends. Driving the clip
+        // from `p` therefore parks it on frame one for the whole entry slide and
+        // on its last frame for the whole exit slide, which is a still
+        // photograph moving up the screen under the reader's hand.
+        //
+        // So map the clip across the stage's entire visible life instead. Both
+        // ends are clamped to scroll that actually exists: an act at the top of
+        // the document has no entry slide and must still start on frame one, and
+        // an act near the bottom must still reach its last frame while the page
+        // can still scroll.
+        a.vp = a.p;
+        if (a.pinned && !a.clipTravel) {
+          var startY = a.top - Math.min(vh, a.top);
+          var endY = Math.min(a.top + a.height, maxY);
+          var vraw = clamp01((y - startY) / Math.max(endY - startY, 1));
+          a.vp = a.dwell ? dwell(vraw, a.dwell) : vraw;
+        }
+        a.live = (y > a.top - vh * 1.25) && (y < a.top + a.height + vh * 1.25);
+        a.el.style.setProperty('--sc-p', a.p.toFixed(4));
+
+        // Fetch earlier than we drive. A 1080p clip is megabytes, and a reader
+        // who scrolls briskly will otherwise arrive at a stage that is still
+        // downloading and see a poster where the camera move should be.
+        var warm = (y > a.top - vh * 3) && (y < a.top + a.height + vh * 1.5);
+        if (warm) {
+          if (a.video) loadVideo(a);
+          if (a.seq) loadSeq(a);
+        }
+        if (a.live && a.seq) drawSeq(a);
+        if (a.video) { a.video.live = a.live; if (a.video.ready) a.video.target = a.vp; }
+
+        // horizontal rail
+        if (a.rail) {
+          var over = a.rail.scrollWidth - vw;
+          if (over > 0) {
+            var extra = over * (a.railExtra || 0);
+            a.rail.style.transform = 'translate3d(' + (-(over + extra) * a.p).toFixed(2) + 'px,0,0)';
+          }
+        }
+
+        if (!a.live) {
+          // An act that scrolls out of range must release its cues rather than
+          // freezing them at whatever they last were. A "hold" cue left at
+          // opacity 1 keeps its element hit-testable and paintable long after
+          // its act is gone, which shows up as a stray headline over a later
+          // section. Zero once, then leave it alone.
+          if (a.parked !== true) {
+            for (var z = 0; z < a.cues.length; z++) {
+              var pq = a.cues[z];
+              pq.el.style.opacity = '0';
+              pq.el.style.pointerEvents = 'none';
+              pq.state = 0;
+              if (pq.units) for (var zu = 0; zu < pq.units.length; zu++) pq.units[zu].style.opacity = '0';
+            }
+            a.parked = true;
+          }
+          continue;
+        }
+        a.parked = false;
+
+        // cues
+        for (var c = 0; c < a.cues.length; c++) {
+          var q = a.cues[c];
+          var vis;
+          if (q.to === null) {
+            vis = smooth((a.p - q.from) / 0.18);
+          } else {
+            var win = Math.max(q.to - q.from, 0.001);
+            var inEnd = q.from + win * q.rIn;        // full opacity from here
+            var outStart = q.to - win * q.rOut;      // starts leaving here
+            if (a.p < inEnd) vis = smooth((a.p - q.from) / Math.max(inEnd - q.from, 0.001));
+            else if (a.p <= outStart) vis = 1;       // the plateau
+            else vis = smooth(1 - (a.p - outStart) / Math.max(q.to - outStart, 0.001));
+          }
+          vis = clamp01(vis);
+
+          if (q.kinetic) {
+            if (!q.units) q.units = splitText(q.el, q.kinetic);
+            var n = q.units.length;
+            // Stagger across the reveal window. 0.62 spread leaves the tail of
+            // the window for the last unit to finish, so the line lands together
+            // rather than trickling.
+            for (var u = 0; u < n; u++) {
+              var uStart = (u / Math.max(n, 1)) * 0.62;
+              var uv = clamp01((vis - uStart) / (1 - 0.62 + 0.001));
+              uv = smooth(uv);
+              q.units[u].style.opacity = uv.toFixed(3);
+              q.units[u].style.transform = reduce ? 'none'
+                : 'translate3d(0,' + ((1 - uv) * 100).toFixed(2) + '%,0)';
+            }
+            q.el.style.opacity = '1';
+          } else {
+            q.el.style.opacity = vis.toFixed(3);
+            q.el.style.transform = reduce ? 'none'
+              : 'translate3d(0,' + ((1 - vis) * 2.4 * q.rise).toFixed(2) + 'vh,0)';
+          }
+          var on = vis > 0.5;
+          if (on !== (q.state === 1)) { q.state = on ? 1 : 0; q.el.style.pointerEvents = on ? 'auto' : 'none'; }
+        }
+
+        // parallax
+        if (!reduce) {
+          for (var pz = 0; pz < a.parallax.length; pz++) {
+            var pp = a.parallax[pz];
+            pp.el.style.transform = 'translate3d(0,' + (pp.rate * (a.p - 0.5) * 100).toFixed(2) + 'px,0)';
+          }
+        }
+
+        // reveals
+        for (var rv = 0; rv < a.reveals.length; rv++) {
+          var R = a.reveals[rv];
+          var t = smooth((a.p - R.from) / Math.max(R.to - R.from, 0.001));
+          var pct = ((1 - t) * 100).toFixed(2);
+          R.el.style.clipPath =
+            R.dir === 'down' ? 'inset(' + pct + '% 0 0 0)' :
+            R.dir === 'left' ? 'inset(0 ' + pct + '% 0 0)' :
+            R.dir === 'right' ? 'inset(0 0 0 ' + pct + '%)' :
+            R.dir === 'iris' ? 'circle(' + (t * 78).toFixed(2) + '% at 50% 50%)' :
+                               'inset(0 0 ' + pct + '% 0)';
+        }
+
+        // counters
+        for (var ct = 0; ct < a.counts.length; ct++) {
+          var K = a.counts[ct];
+          var kt = smooth((a.p - K.from) / Math.max(K.to - K.from, 0.001));
+          var val = lerp(K.a, K.b, kt);
+          var out = formatNum(val, K.tpl);
+          if (out !== K.last) { K.el.textContent = out; K.last = out; }
+        }
+      }
+
+      for (var w = 0; w < worlds.length; w++) readWorld(worlds[w]);
+
+      // background drift
+      for (var d = 0; d < drifts.length; d++) {
+        var D = drifts[d];
+        if (D.act.raw > 0 && D.act.raw < 1) {
+          driftA = D; driftT = smooth(D.act.raw / 0.35);
+          driftB = drifts[d - 1] || D;
+          break;
+        }
+        if (D.act.raw >= 1) { driftA = D; driftB = D; driftT = 1; }
+      }
+      if (driftA) {
+        docEl.style.setProperty('--sc-canvas', mixColor(driftB.rgb, driftA.rgb, driftT));
+      }
+
+      if (progressBar) {
+        var max = Math.max(document.body.scrollHeight - vh, 1);
+        progressBar.style.transform = 'scaleX(' + clamp01(y / max).toFixed(4) + ')';
+      }
+    }
+
+    // ---- video seek loop --------------------------------------------------
+    // Split from read() on purpose: seeking is asynchronous and rate-limited by
+    // the decoder, while read() must stay cheap enough to run on every scroll
+    // event. The lerp here is also what turns a jittery wheel into a glide.
+    function tick() {
+      // Deadband. A phone decoder cannot service a seek every frame, so asking
+      // for one costs more than it shows; 20ms of clip is under a frame of
+      // footage anyway.
+      var eps = isMobile() ? 0.02 : 0.008;
+      for (var i = 0; i < playheads.length; i++) {
+        var V = playheads[i];
+        if (!V.ready) continue;
+        // Never queue a seek while the decoder is still resolving the last one.
+        // On a phone a fast flick otherwise piles seeks up and freezes the clip.
+        // But a seek that never completes would freeze the clip for the life of
+        // the page through this very guard, so a seek stuck past 700ms is
+        // re-issued rather than waited on forever.
+        if (V.el.seeking) {
+          var nw = performance.now();
+          if (!V.stuckAt) V.stuckAt = nw;
+          else if (nw - V.stuckAt > 700) {
+            V.stuckAt = nw;
+            try { V.el.currentTime = V.el.currentTime + 0.001; } catch (e) {}
+          }
+          continue;
+        }
+        V.stuckAt = 0;
+        // An offscreen clip that has already arrived stops costing anything.
+        if (!V.live && Math.abs(V.cur - V.target) < 0.002) continue;
+        V.cur += (V.target - V.cur) * (reduce ? 1 : V.lerp);
+        var dur = V.el.duration || 1;
+        var t = clamp(V.cur, 0, 0.999) * dur;
+        if (Math.abs(V.el.currentTime - t) > eps) { try { V.el.currentTime = t; } catch (e) {} }
+      }
+      requestAnimationFrame(tick);
+    }
+
+    // iOS will not paint a muted video that has never been handed a user
+    // gesture, so a clip can be loaded, seeked and still show nothing.
+    //
+    // This used to fire once, on the first touch, across every playhead. That
+    // loses a race it cannot win. The first act's clip is still being fetched
+    // when the reader's first touch arrives (they touch the screen in order to
+    // scroll, and the clip is megabytes) so play() is called on a video with
+    // no source, does nothing, and the one shot is spent. Every later act loads
+    // long after that touch, with user activation already granted, and works
+    // without ever needing this. That is the exact shape of the bug: the hero
+    // frozen, everything below it fine.
+    //
+    // So: keep listening, prime each clip once it actually has a source, and
+    // stop only when they are all done. And force a seek afterwards, because a
+    // primed decoder still shows the stale frame until something asks it for a
+    // different time, and the deadband in tick() will not ask if the playhead is
+    // already where it should be.
+    var primedCount = 0;
+    function primeClip(V) {
+      // priming guards the retry: play() is a promise, and calling it again
+      // while the last one is unsettled produces "interrupted by pause" and can
+      // leave the element playing.
+      if (V.primed || V.priming || !V.el.src) return;
+      V.priming = true;
+      var done = function () {
+        V.priming = false;
+        if (!V.primed) { V.primed = true; primedCount++; }
+        try { V.el.pause(); } catch (e) {}
+        // repaint: nudge past the deadband so the next tick writes for real
+        try {
+          var dur = V.el.duration || 1;
+          V.cur = clamp(V.cur, 0, 0.999);
+          V.el.currentTime = clamp(V.cur * dur + 0.05, 0, dur * 0.999);
+        } catch (e) {}
+      };
+      var fail = function () { V.priming = false; };
+      // A play() promise is allowed to stay pending forever (iOS does this to a
+      // video it has decided not to start). If that happened here, `priming`
+      // would jam and no gesture could ever retry, so the flag is released on a
+      // timer as well. A late resolution after the release still lands in
+      // done(), which is idempotent.
+      setTimeout(function () { if (V.priming) fail(); }, 2000);
+      var pr;
+      try { pr = V.el.play(); } catch (e) { fail(); return; }
+      if (pr && pr.then) pr.then(done, fail);
+      else done();
+    }
+    function prime() {
+      for (var i = 0; i < playheads.length; i++) primeClip(playheads[i]);
+      if (playheads.length && primedCount >= playheads.length) {
+        removeEventListener('touchstart', prime);
+        removeEventListener('touchend', prime);
+        removeEventListener('pointerdown', prime);
+        removeEventListener('click', prime);
+        removeEventListener('scroll', prime);
+      }
+    }
+    // touchend and click are here because the HTML spec's list of activation-
+    // triggering events includes touchend but NOT touchstart. A restricted
+    // device (Low Power Mode) that rejects the touchstart prime for lacking
+    // activation gets a second, valid chance the moment the finger lifts.
+    addEventListener('touchstart', prime, { passive: true });
+    addEventListener('touchend', prime, { passive: true });
+    addEventListener('pointerdown', prime, { passive: true });
+    addEventListener('click', prime, { passive: true });
+    addEventListener('scroll', prime, { passive: true });
+
+    // ---- pointer devices --------------------------------------------------
+    var tilts = [], magnets = [], spots = [];
+    function initPointer() {
+      if (reduce || !fineMQ.matches) return;
+      Array.prototype.forEach.call(root.querySelectorAll('[data-sc-tilt]'), function (el) {
+        tilts.push({ el: el, max: parseFloat(el.getAttribute('data-sc-tilt')) || 6, x: 0, ty: 0, tx: 0, y: 0 });
+      });
+      Array.prototype.forEach.call(root.querySelectorAll('[data-sc-magnet]'), function (el) {
+        magnets.push({ el: el, k: parseFloat(el.getAttribute('data-sc-magnet')) || 0.3, x: 0, y: 0, tx: 0, ty: 0 });
+      });
+      Array.prototype.forEach.call(root.querySelectorAll('[data-sc-spotlight]'), function (el) {
+        spots.push(el);
+      });
+      if (!tilts.length && !magnets.length && !spots.length) return;
+
+      addEventListener('pointermove', function (e) {
+        if (e.pointerType !== 'mouse') return;
+        for (var i = 0; i < tilts.length; i++) {
+          var T = tilts[i], r = T.el.getBoundingClientRect();
+          if (r.bottom < -200 || r.top > vh + 200) { T.tx = 0; T.ty = 0; continue; }
+          var nx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2);
+          var ny = (e.clientY - (r.top + r.height / 2)) / (r.height / 2);
+          var inside = Math.abs(nx) < 1.6 && Math.abs(ny) < 1.6;
+          T.tx = inside ? clamp(ny, -1, 1) * -T.max : 0;
+          T.ty = inside ? clamp(nx, -1, 1) * T.max : 0;
+        }
+        for (var m = 0; m < magnets.length; m++) {
+          var M = magnets[m], mr = M.el.getBoundingClientRect();
+          var dx = e.clientX - (mr.left + mr.width / 2);
+          var dy = e.clientY - (mr.top + mr.height / 2);
+          var near = Math.abs(dx) < mr.width && Math.abs(dy) < mr.height * 2.5;
+          M.tx = near ? dx * M.k : 0;
+          M.ty = near ? dy * M.k : 0;
+        }
+        for (var s = 0; s < spots.length; s++) {
+          var sr = spots[s].getBoundingClientRect();
+          spots[s].style.setProperty('--sc-mx', clamp01((e.clientX - sr.left) / sr.width).toFixed(3));
+          spots[s].style.setProperty('--sc-my', clamp01((e.clientY - sr.top) / sr.height).toFixed(3));
+        }
+      }, { passive: true });
+
+      (function pointerTick() {
+        // Interpolate toward the target rather than tracking the pointer
+        // directly. Direct tracking reads as artificial because it carries no
+        // momentum; the lerp gives it weight.
+        for (var i = 0; i < tilts.length; i++) {
+          var T = tilts[i];
+          T.x += (T.tx - T.x) * 0.09; T.y += (T.ty - T.y) * 0.09;
+          if (Math.abs(T.x) > 0.001 || Math.abs(T.y) > 0.001) {
+            T.el.style.transform = 'perspective(1100px) rotateX(' + T.x.toFixed(3) + 'deg) rotateY(' + T.y.toFixed(3) + 'deg)';
+          }
+        }
+        for (var m = 0; m < magnets.length; m++) {
+          var M = magnets[m];
+          M.x += (M.tx - M.x) * 0.12; M.y += (M.ty - M.y) * 0.12;
+          M.el.style.transform = 'translate3d(' + M.x.toFixed(2) + 'px,' + M.y.toFixed(2) + 'px,0)';
+        }
+        requestAnimationFrame(pointerTick);
+      })();
+    }
+
+    // ---- wiring -----------------------------------------------------------
+    var ticking = false;
+    addEventListener('scroll', function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(function () { read(); ticking = false; }); }
+    }, { passive: true });
+
+    // Keyboard focus on a pinned or panning act. The browser's own
+    // scroll-into-view parks the focused element barely on screen, which is
+    // exactly the scroll position at which its cue has not opened yet, so focus
+    // lands on a control nobody can see and every automated opacity check still
+    // passes. Centring the act instead is a position where the cue is lit by
+    // definition. behavior:'instant' on purpose: scrollcraft.css sets
+    // scroll-behavior:smooth, so the default animates the jump and focus sits
+    // off screen for the whole of a multi-screen glide.
+    addEventListener('focusin', function (e) {
+      var el = e.target;
+      if (!el || !el.closest) return;
+      var act = el.closest('[data-sc-act]');
+      if (!act || !root.contains(act)) return;
+      var cue = el.closest('[data-sc-cue]');
+      if (!cue) return;
+      if (parseFloat(getComputedStyle(cue).opacity || '1') > 0.85) return;
+      el.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
+    });
+
+    var lastW = innerWidth;
+    addEventListener('resize', function () {
+      // Ignore URL-bar-only height changes on phones. Relaying out on those
+      // makes the page jump under the reader's thumb for no reason.
+      if (innerWidth === lastW && isMobile()) { vh = innerHeight; return; }
+      lastW = innerWidth;
+      layout();
+    }, { passive: true });
+
+    if (document.fonts && document.fonts.ready) {
+      // Line splitting measures line boxes, so it has to wait for the real face.
+      document.fonts.ready.then(function () {
+        acts.forEach(function (a) { a.cues.forEach(function (q) { if (q.kinetic && q.units) { q.el.__scSplit = null; q.units = null; } }); });
+        layout();
+      });
+    }
+
+    layout();
+    initPointer();
+    requestAnimationFrame(tick);
+    document.documentElement.classList.add('sc-ready');
+
+    var api = { layout: layout, read: read, acts: acts, worlds: worlds, clips: playheads, lerp: LERP };
+    global.ScrollCraft.instances.push(api);
+    return api;
+  }
+
+  // The instance list is not an API for the page. It is how the verification
+  // harness reads the real playhead records: a screenshot taken mid-lerp is a
+  // frame the page never actually holds, so the harness has to be able to ask
+  // whether the playhead has arrived rather than guess with a timeout.
+  global.ScrollCraft = { mount: mount, reduce: reduce, instances: [] };
+})(window);
+
+
+</script>
+<script>
+(function () {
+  "use strict";
+
+  /* ── THE ONE THING TO EDIT ──────────────────────────────────
+     Drop the real Cal.com / Calendly URL between the quotes.
+     It wires every booking button on the page. */
+  var BOOKING_URL = "https://cal.com/marc-petrucci-szggjv/60min";
+
+  var reduce = false;
+  try { reduce = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+
+  /* ══ Booking links ═══════════════════════════════════════ */
+  if (BOOKING_URL && BOOKING_URL.charAt(0) !== "[") {
+    var books = document.querySelectorAll("[data-md-book]");
+    for (var i = 0; i < books.length; i++) {
+      books[i].setAttribute("href", BOOKING_URL);
+      books[i].setAttribute("target", "_blank");
+      books[i].setAttribute("rel", "noopener");
+    }
+  }
+
+  /* ══ Nav: hairline appears once you leave the hero ════════ */
+  (function nav() {
+    var el = document.getElementById("md-nav");
+    if (!el) return;
+    var on = false;
+    function tick() {
+      var want = window.pageYOffset > 48;
+      if (want !== on) { on = want; if (on) el.setAttribute("data-stuck", ""); else el.removeAttribute("data-stuck"); }
+    }
+    addEventListener("scroll", tick, { passive: true });
+    tick();
+  })();
+
+  /* ══ Loader: the mark fills left to right ═════════════════ */
+  (function loader() {
+    var box = document.getElementById("md-loader");
+    if (!box) { document.body.classList.add("md-ready"); return; }
+
+    function finish() {
+      box.setAttribute("data-done", "");
+      document.body.classList.add("md-ready");
+      setTimeout(function () { if (box.parentNode) box.parentNode.removeChild(box); }, 900);
+    }
+
+    /* Once per session, and ?intro=0 skips it outright. A repeat
+       visitor should not sit through the same title card twice. */
+    var skip = false;
+    try {
+      skip = /[?&]intro=0/.test(location.search) ||
+             sessionStorage.getItem("md-intro-seen") === "1" || reduce;
+    } catch (e) { skip = /[?&]intro=0/.test(location.search) || reduce; }
+
+    if (skip) {
+      if (box.parentNode) box.parentNode.removeChild(box);
+      document.body.classList.add("md-ready");
+      return;
+    }
+    try { sessionStorage.setItem("md-intro-seen", "1"); } catch (e) {}
+
+    var t0 = performance.now(), DUR = 1000;
+    (function step(now) {
+      var p = clamp((now - t0) / DUR, 0, 1);
+      var e = 1 - Math.pow(1 - p, 3);
+      box.style.setProperty("--md-load", (e * 100).toFixed(2) + "%");
+      if (p < 1) requestAnimationFrame(step);
+      else setTimeout(finish, 220);
+    })(t0);
+  })();
+
+  /* ══ The background ═══════════════════════════════════════
+     The "Plasma" shader from the 21st.dev Shader Builder, ported
+     out of its React wrapper into this page. The fragment shader
+     is that file's GLSL verbatim; only the mount is rewritten,
+     because the original is a React component and this page has
+     no framework.
+
+     Its cursor branch is compiled in but permanently switched off:
+     u_cursor.x stays at 0, exactly as the source's own
+     cursorEnabled: false intends. The background answers to
+     nothing but time and scroll. */
+  (function surface() {
+    var cv = document.getElementById("md-gl");
+    if (!cv) return;
+
+    var gl = null;
+    try {
+      gl = cv.getContext("webgl", { alpha: false, antialias: false, depth: false, powerPreference: "low-power" }) ||
+           cv.getContext("experimental-webgl", { alpha: false, antialias: false, depth: false });
+    } catch (e) { gl = null; }
+    if (!gl) { document.body.setAttribute("data-nogl", ""); cv.style.display = "none"; return; }
+
+    var VERT = "attribute vec2 a_position;\nvoid main(){ gl_Position = vec4(a_position, 0.0, 1.0); }";
+
+    var FRAG = [
+      "#ifdef GL_FRAGMENT_PRECISION_HIGH",
+      "precision highp float;",
+      "#else",
+      "precision mediump float;",
+      "#endif",
+      "uniform vec3 u_colors[8];",
+      "uniform vec4 u_scene; uniform vec4 u_shape; uniform vec4 u_surface;",
+      "uniform vec4 u_finish; uniform vec4 u_transform; uniform vec4 u_space; uniform vec4 u_cursor;",
+      "#define u_resolution u_scene.xy",
+      "#define u_time u_scene.z",
+      "#define u_colorCount u_scene.w",
+      "#define u_scale u_shape.x",
+      "#define u_intensity u_shape.y",
+      "#define u_paramA u_shape.z",
+      "#define u_warp u_shape.w",
+      "#define u_detail u_surface.x",
+      "#define u_contrast u_surface.y",
+      "#define u_brightness u_surface.z",
+      "#define u_saturation u_surface.w",
+      "#define u_hue u_finish.x",
+      "#define u_vignette u_finish.y",
+      "#define u_blur u_finish.z",
+      "#define u_grain u_finish.w",
+      "#ifdef GL_FRAGMENT_PRECISION_HIGH",
+      "#define u_seed u_transform.x",
+      "#else",
+      "#define u_seed mod(u_transform.x, 31.0)",
+      "#endif",
+      "#define u_rotate u_transform.y",
+      "#define u_drift u_transform.z",
+      "#define u_oklab u_transform.w",
+      "#define u_offset u_space.xy",
+      "#define u_mouse u_space.zw",
+      "#define u_cursorPresence u_cursor.x",
+      "#define u_cursorEffect u_cursor.y",
+      "#define u_cursorStrength u_cursor.z",
+      "#define u_cursorRadius u_cursor.w",
+      "float hash21(vec2 p){",
+      "#ifndef GL_FRAGMENT_PRECISION_HIGH",
+      "  p = mod(p, 31.0);",
+      "#endif",
+      "  p = fract(p * vec2(234.34, 435.345));",
+      "  p += dot(p, p + 34.23);",
+      "  return fract(p.x * p.y); }",
+      "float grainHash(vec2 p){",
+      "  vec3 p3 = fract(vec3(p.xyx) * 0.1031);",
+      "  p3 += dot(p3, p3.yzx + 33.33);",
+      "  return fract((p3.x + p3.y) * p3.z); }",
+      "float noise(vec2 p){",
+      "  vec2 i = floor(p); vec2 f = fract(p);",
+      "  vec2 u = f * f * (3.0 - 2.0 * f);",
+      "  return mix(mix(hash21(i), hash21(i + vec2(1.0,0.0)), u.x),",
+      "             mix(hash21(i + vec2(0.0,1.0)), hash21(i + vec2(1.0,1.0)), u.x), u.y); }",
+      "float fbm(vec2 p){",
+      "  float v = 0.0; float a = 0.5;",
+      "  for (int i = 0; i < 5; i++){ v += a * noise(p); p = p * 2.03 + vec2(17.0, 9.2); a *= 0.5; }",
+      "  return v; }",
+      "vec3 srgbToLinear(vec3 c){ return mix(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)), step(0.04045, c)); }",
+      "vec3 linearToSrgb(vec3 c){ return mix(c * 12.92, 1.055 * pow(max(c, vec3(0.0)), vec3(1.0/2.4)) - 0.055, step(0.0031308, c)); }",
+      "vec3 linToOklab(vec3 c){",
+      "  float l = 0.4122214708*c.r + 0.5363325363*c.g + 0.0514459929*c.b;",
+      "  float m = 0.2119034982*c.r + 0.6806995451*c.g + 0.1073969566*c.b;",
+      "  float s = 0.0883024619*c.r + 0.2817188376*c.g + 0.6299787005*c.b;",
+      "  l = pow(max(l,0.0), 1.0/3.0); m = pow(max(m,0.0), 1.0/3.0); s = pow(max(s,0.0), 1.0/3.0);",
+      "  return vec3(0.2104542553*l + 0.7936177850*m - 0.0040720468*s,",
+      "              1.9779984951*l - 2.4285922050*m + 0.4505937099*s,",
+      "              0.0259040371*l + 0.7827717662*m - 0.8086757660*s); }",
+      "vec3 oklabToLin(vec3 c){",
+      "  float l = c.x + 0.3963377774*c.y + 0.2158037573*c.z;",
+      "  float m = c.x - 0.1055613458*c.y - 0.0638541728*c.z;",
+      "  float s = c.x - 0.0894841775*c.y - 1.2914855480*c.z;",
+      "  l = l*l*l; m = m*m*m; s = s*s*s;",
+      "  return vec3( 4.0767416621*l - 3.3077115913*m + 0.2309699292*s,",
+      "              -1.2684380046*l + 2.6097574011*m - 0.3413193965*s,",
+      "              -0.0041960863*l - 0.7034186147*m + 1.7076147010*s); }",
+      "vec3 mixColour(vec3 a, vec3 b, float t){",
+      "  if (u_oklab > 0.5){",
+      "    vec3 la = linToOklab(srgbToLinear(a));",
+      "    vec3 lb = linToOklab(srgbToLinear(b));",
+      "    return clamp(linearToSrgb(oklabToLin(mix(la, lb, t))), 0.0, 1.0); }",
+      "  return mix(a, b, t); }",
+      "vec3 palette(float x){",
+      "  float n = max(u_colorCount - 1.0, 1.0);",
+      "  float f = clamp(x, 0.0, 1.0) * n;",
+      "  vec3 col = u_colors[0];",
+      "  for (int i = 0; i < 7; i++){",
+      "    if (float(i) < n)",
+      "      col = mixColour(col, u_colors[i + 1], smoothstep(0.0, 1.0, clamp(f - float(i), 0.0, 1.0)));",
+      "  }",
+      "  return col; }",
+      "vec3 hueRotate(vec3 col, float a){",
+      "  const mat3 toYIQ = mat3(0.299, 0.596, 0.211, 0.587, -0.274, -0.523, 0.114, -0.322, 0.312);",
+      "  const mat3 toRGB = mat3(1.0, 1.0, 1.0, 0.956, -0.272, -1.106, 0.621, -0.647, 1.703);",
+      "  vec3 yiq = toYIQ * col;",
+      "  float ca = cos(a), sa = sin(a);",
+      "  yiq = vec3(yiq.x, yiq.y*ca - yiq.z*sa, yiq.y*sa + yiq.z*ca);",
+      "  return toRGB * yiq; }",
+      "vec3 shade(vec2 uv, vec2 p, float t){",
+      "  float k = 2.0 + u_intensity * 6.0;",
+      "  float v = sin(p.x*k + t) + sin(p.y*k*0.8 - t*0.7)",
+      "    + sin((p.x + p.y)*k*0.6 + t*0.5) + sin(length(p)*k*1.2 - t);",
+      "  return palette(0.5 + 0.5 * sin(v + u_seed)); }",
+      "void main(){",
+      "  vec2 uv = gl_FragCoord.xy / u_resolution.xy;",
+      "  vec2 screenUv = uv;",
+      "  vec2 p = (gl_FragCoord.xy - 0.5 * u_resolution.xy) / min(u_resolution.x, u_resolution.y);",
+      "  float cursorMask = 0.0;",
+      "  if (u_cursorPresence > 0.001) {",
+      "    vec2 cursor = (0.5 * u_mouse * u_resolution.xy) / min(u_resolution.x, u_resolution.y);",
+      "    vec2 cursorDelta = p - cursor;",
+      "    if (u_cursorEffect < 0.5) { p += cursor * u_cursorPresence * u_cursorStrength * 0.55; }",
+      "    else {",
+      "      float cursorDistance = length(cursorDelta);",
+      "      vec2 cursorDirection = cursorDelta / max(cursorDistance, 0.0001);",
+      "      cursorMask = u_cursorPresence * (1.0 - smoothstep(0.0, u_cursorRadius, cursorDistance));",
+      "      if (u_cursorEffect < 1.5) { p -= cursorDirection * cursorMask * u_cursorStrength * 0.24; }",
+      "      else if (u_cursorEffect < 2.5) {",
+      "        float cursorAngle = cursorMask * u_cursorStrength * 2.2;",
+      "        float cc = cos(cursorAngle), cs = sin(cursorAngle);",
+      "        p = cursor + mat2(cc, -cs, cs, cc) * cursorDelta; }",
+      "      else if (u_cursorEffect < 3.5) {",
+      "        float ripple = sin(cursorDistance / max(u_cursorRadius, 0.001) * 18.0 - u_time * 5.0);",
+      "        p -= cursorDirection * ripple * cursorMask * u_cursorStrength * 0.07; }",
+      "    }",
+      "  }",
+      "  uv = p * min(u_resolution.x, u_resolution.y) / u_resolution.xy + 0.5;",
+      "  p *= u_scale;",
+      "  if (abs(u_rotate) > 0.0001) { float cr = cos(u_rotate), sr = sin(u_rotate); p = mat2(cr, -sr, sr, cr) * p; }",
+      "  p += u_offset;",
+      "  if (u_drift > 0.0001) p += u_drift * vec2(sin(u_time * 0.31), cos(u_time * 0.23));",
+      "  if (u_warp > 0.0) { p += u_warp * (vec2(fbm(p * u_detail + u_seed), fbm(p * u_detail + vec2(5.2, 1.3))) - 0.5); }",
+      "  vec3 col;",
+      "  if (u_blur > 0.0) {",
+      "    float e = u_blur; float pe = e * u_scale;",
+      "    vec2 uvE = vec2(e) * min(u_resolution.x, u_resolution.y) / u_resolution.xy;",
+      "    col  = shade(uv, p, u_time) * 0.36;",
+      "    col += shade(uv + vec2(uvE.x, 0.0), p + vec2(pe, 0.0), u_time) * 0.16;",
+      "    col += shade(uv - vec2(uvE.x, 0.0), p - vec2(pe, 0.0), u_time) * 0.16;",
+      "    col += shade(uv + vec2(0.0, uvE.y), p + vec2(0.0, pe), u_time) * 0.16;",
+      "    col += shade(uv - vec2(0.0, uvE.y), p - vec2(0.0, pe), u_time) * 0.16;",
+      "  } else { col = shade(uv, p, u_time); }",
+      "  if (abs(u_contrast - 1.0) > 0.0001) col = (col - 0.5) * u_contrast + 0.5;",
+      "  if (abs(u_saturation - 1.0) > 0.0001) { float luma = dot(col, vec3(0.299, 0.587, 0.114)); col = mix(vec3(luma), col, u_saturation); }",
+      "  if (abs(u_hue) > 0.0001) col = hueRotate(col, u_hue);",
+      "  if (abs(u_brightness) > 0.0001) col += u_brightness;",
+      "  if (u_vignette > 0.0001) { float vd = length(screenUv - 0.5) * 1.41421356; col *= 1.0 - u_vignette * smoothstep(0.35, 1.0, vd); }",
+      "  if (u_cursorPresence > 0.001 && u_cursorEffect > 3.5) col += (vec3(0.18) + col * 0.12) * cursorMask * u_cursorStrength;",
+      "  if (u_grain > 0.0001) col += (grainHash(gl_FragCoord.xy + vec2(u_seed * 17.0, u_seed * 31.0)) - 0.5) * u_grain;",
+      "  gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);",
+      "}"
+    ].join("\n");
+
+    /* The source file's own recipe, unchanged. The palette reads warm
+       and the hue rotation of 3.0369 rad is what turns it blue. */
+    var U = {
+      colors: [
+        0.08627450980392157, 0.043137254901960784, 0.043137254901960784,
+        0.7607843137254902, 0.25098039215686274, 0.16470588235294117,
+        0.9568627450980393, 0.615686274509804, 0.21568627450980393,
+        1, 0.9098039215686274, 0.7607843137254902,
+        1, 0.9098039215686274, 0.7607843137254902,
+        1, 0.9098039215686274, 0.7607843137254902,
+        1, 0.9098039215686274, 0.7607843137254902,
+        1, 0.9098039215686274, 0.7607843137254902
+      ],
+      colorCount: 4, scale: 1.5, intensity: 0.48, paramA: 0.5, warp: 0,
+      detail: 2.4, contrast: 0.924, brightness: -0.5, saturation: 1,
+      hue: 3.0369, vignette: 0.61, blur: 0.016, grain: 0.35,
+      seed: 7, rotate: 0, offsetX: 0, offsetY: 0, drift: 0.156,
+      oklab: 0, timeScale: 0.86
+    };
+
+    function build(type, src) {
+      var s = gl.createShader(type);
+      gl.shaderSource(s, src); gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) return null;
+      return s;
+    }
+    var vs = build(gl.VERTEX_SHADER, VERT), fs = build(gl.FRAGMENT_SHADER, FRAG);
+    if (!vs || !fs) { document.body.setAttribute("data-nogl", ""); cv.style.display = "none"; return; }
+
+    var pr = gl.createProgram();
+    gl.attachShader(pr, vs); gl.attachShader(pr, fs); gl.linkProgram(pr);
+    if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) { document.body.setAttribute("data-nogl", ""); cv.style.display = "none"; return; }
+    gl.useProgram(pr);
+
+    var buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    var loc = gl.getAttribLocation(pr, "a_position");
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+    var u = {
+      colors: gl.getUniformLocation(pr, "u_colors"),
+      scene: gl.getUniformLocation(pr, "u_scene"),
+      shape: gl.getUniformLocation(pr, "u_shape"),
+      surface: gl.getUniformLocation(pr, "u_surface"),
+      finish: gl.getUniformLocation(pr, "u_finish"),
+      transform: gl.getUniformLocation(pr, "u_transform"),
+      space: gl.getUniformLocation(pr, "u_space"),
+      cursor: gl.getUniformLocation(pr, "u_cursor")
+    };
+    gl.uniform3fv(u.colors, new Float32Array(U.colors));
+    gl.uniform4f(u.shape, U.scale, U.intensity, U.paramA, U.warp);
+    gl.uniform4f(u.surface, U.detail, U.contrast, U.brightness, U.saturation);
+    gl.uniform4f(u.finish, U.hue, U.vignette, U.blur, U.grain);
+    gl.uniform4f(u.transform, U.seed, U.rotate, U.drift, U.oklab);
+    gl.uniform4f(u.space, U.offsetX, U.offsetY, 0, 0);
+    /* Presence pinned to zero. No pointer is ever read. */
+    gl.uniform4f(u.cursor, 0, 0, 0, 0);
+
+    var SCALE = 0.5;
+    function size() {
+      var w = Math.max(2, Math.round(innerWidth * SCALE)),
+          h = Math.max(2, Math.round(innerHeight * SCALE));
+      if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; gl.viewport(0, 0, w, h); }
+    }
+    addEventListener("resize", size, { passive: true });
+    size();
+
+    var scroll = 0;
+    function docP() {
+      var max = document.documentElement.scrollHeight - innerHeight;
+      return max > 0 ? clamp(window.pageYOffset / max, 0, 1) : 0;
+    }
+    /* The background carries the two ends of the page and gets out of
+       the way through the middle, where the reading happens. */
+    function opacity(p) {
+      if (p < 0.07) return 0.56;
+      if (p < 0.15) return 0.56 - (p - 0.07) / 0.08 * 0.40;
+      if (p < 0.80) return 0.16;
+      return 0.16 + (p - 0.80) / 0.20 * 0.30;
+    }
+    var lastO = -1;
+    function paintOpacity(p) {
+      var o = opacity(p);
+      if (Math.abs(o - lastO) > 0.004) {
+        lastO = o;
+        document.documentElement.style.setProperty("--md-gl-o", o.toFixed(3));
+      }
+    }
+
+    var t0 = performance.now(), visible = true;
+    document.addEventListener("visibilitychange", function () { visible = !document.hidden; });
+
+    function draw(t) {
+      gl.uniform4f(u.scene, cv.width, cv.height, t, U.colorCount);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+
+    if (reduce) {
+      scroll = docP(); paintOpacity(scroll); draw(4.2);
+      addEventListener("scroll", function () { scroll = docP(); paintOpacity(scroll); }, { passive: true });
+      return;
+    }
+
+    (function frame(now) {
+      requestAnimationFrame(frame);
+      if (!visible) return;
+      scroll += (docP() - scroll) * 0.10;
+      paintOpacity(scroll);
+      draw(((now - t0) / 1000) * U.timeScale);
+    })(t0);
+  })();
+
+  /* ══ Signature move: the reply that writes itself ═════════
+     Scroll is the keyboard. The draft appears at the pace the
+     visitor moves, and the three read-outs are counted off the
+     text that is actually on screen, not off a made-up figure. */
+  (function reply() {
+    var peak = document.getElementById("md-peak"),
+        out  = document.getElementById("md-mail-out"),
+        mW   = document.getElementById("md-m-words"),
+        mail = document.getElementById("md-mail");
+    if (!peak || !out || !mail) return;
+
+    var TEXT = "Dana, good to hear it.\n\n" +
+      "Lead time on the second line is six weeks from deposit, so a January start still lands you inside Q1. " +
+      "The pricing holds through the end of the year.\n\n" +
+      "I will send the revised schedule tonight so leadership has it in front of them before Thursday. " +
+      "Anything else they flagged?\n\n" +
+      "Marc";
+
+    var TOTAL_WORDS = TEXT.split(/\s+/).filter(Boolean).length;
+
+    var caret = document.createElement("span");
+    caret.className = "md-caret";
+    var text = document.createTextNode("");
+    out.appendChild(text);
+    out.appendChild(caret);
+
+    var lastN = -1;
+    function paint(n) {
+      if (n === lastN) return;
+      lastN = n;
+      var shown = TEXT.slice(0, n);
+      text.nodeValue = shown;
+      caret.style.display = n >= TEXT.length ? "none" : "";
+      if (mW) mW.textContent = String(shown.split(/\s+/).filter(Boolean).length);
+    }
+
+    if (reduce) { paint(TEXT.length); mail.style.setProperty("--md-w", "1"); return; }
+
+    function readP() {
+      var v = getComputedStyle(peak).getPropertyValue("--sc-p");
+      var f = parseFloat(v);
+      return isNaN(f) ? 0 : f;
+    }
+
+    /* Writing runs from just after the heading lands to very near the
+       end of the pinned range. It used to finish at 0.60, which left the
+       last third of the lock with nothing happening in it — the reader
+       kept scrolling a pinned, finished screen. Ending at 0.90 means the
+       lock is doing something for as long as it holds. */
+    var FROM = 0.05, TO = 0.90;
+    function tick() {
+      requestAnimationFrame(tick);
+      var p = clamp((readP() - FROM) / (TO - FROM), 0, 1);
+      paint(Math.round(p * TEXT.length));
+      mail.style.setProperty("--md-w", p.toFixed(3));
+    }
+    requestAnimationFrame(tick);
+
+    /* If the numbers ever disagree with the copy, the copy is
+       wrong. This keeps the "left for you" figure honest. */
+    var mLeft = document.getElementById("md-m-left");
+    if (mLeft) mLeft.textContent = "0";
+    void TOTAL_WORDS;
+  })();
+
+  /* ══ The headline writes itself in ════════════════════════
+     Same wipe the sign-off uses, so the page opens and closes in
+     the same hand. */
+  (function writeHeadline() {
+    var h = document.querySelector(".md-hero .md-h1");
+    if (!h) return;
+    if (reduce) { h.style.setProperty("--md-write", "1"); return; }
+    h.style.setProperty("--md-write", "0");
+    function run() {
+      var t0 = performance.now(), DUR = 1500;
+      (function step(now) {
+        var p = clamp((now - t0) / DUR, 0, 1);
+        /* Eased so the pen starts quickly and settles, rather than
+           crawling at a constant rate. */
+        var e = 1 - Math.pow(1 - p, 2.4);
+        h.style.setProperty("--md-write", e.toFixed(4));
+        if (p < 1) requestAnimationFrame(step);
+        else document.dispatchEvent(new CustomEvent("md:written"));
+      })(t0);
+    }
+    if (document.body.classList.contains("md-ready")) requestAnimationFrame(run);
+    else {
+      var iv = setInterval(function () {
+        if (document.body.classList.contains("md-ready")) { clearInterval(iv); run(); }
+      }, 60);
+      setTimeout(function () {
+        clearInterval(iv); h.style.setProperty("--md-write", "1");
+        document.dispatchEvent(new CustomEvent("md:written"));
+      }, 6000);
+    }
+  })();
+
+  /* ══ The word that changes ═══════════════════════════════
+     Business, then Time, then Life, on its own line under the
+     lead. Waits for the headline to finish being written so the
+     two motions never argue. */
+  (function rotator() {
+    var slot = document.getElementById("md-rot");
+    if (!slot) return;
+    var words = slot.querySelectorAll("[data-md-word]");
+    if (words.length < 2) return;
+    var at = 0, timer = null;
+
+    /* Every word must always enter from below and leave to above,
+       forever, no matter how many times the list wraps. Comparing
+       index to `at` breaks on wrap (a low index reads as "past"
+       even right after wrapping back to it), so instead: only ever
+       touch the word becoming active and the one just leaving, then
+       snap the leaver back to its waiting spot with no transition
+       once its exit finishes, so it is ready to enter from below
+       again next time round. */
+    for (var w = 0; w < words.length; w++) {
+      words[w].addEventListener("transitionend", function (e) {
+        if (e.propertyName !== "opacity") return;
+        var el = e.currentTarget;
+        if (el.getAttribute("data-st") !== "past") return;
+        el.style.transition = "none";
+        el.removeAttribute("data-st");
+        void el.offsetHeight;
+        el.style.transition = "";
+      });
+    }
+    function paint(prevAt) {
+      words[at].setAttribute("data-st", "on");
+      if (prevAt !== null && prevAt !== at) words[prevAt].setAttribute("data-st", "past");
+    }
+    function start() {
+      if (timer) return;
+      slot.setAttribute("data-ready", "");
+      paint(null);
+      if (reduce) return;
+      /* The first word is already on screen for the whole 1500ms headline
+         write-on before this runs, so a further 2300ms left it up for
+         ~3.8s against 2.3s for every other word — the one beat in the
+         cycle that visibly dragged. Its first turn is shortened by about
+         that write-on, then the interval settles into the steady rhythm. */
+      function step() {
+        var prev = at;
+        at = (at + 1) % words.length;
+        paint(prev);
+      }
+      timer = -1;
+      setTimeout(function () { step(); timer = setInterval(step, 2300); }, 900);
+    }
+
+    if (reduce) { start(); return; }
+    document.addEventListener("md:written", start, { once: true });
+    setTimeout(start, 7000);   /* if the write-on never reports in */
+  })();
+
+  /* ══ The deck: one card at a time ═════════════════════════
+     Three screens stacked on the same grid cell. The act's own
+     progress decides which one is in front; the two behind it sit
+     slightly lower and smaller so you can see they are waiting,
+     and the front one lifts away rather than simply vanishing.
+
+     Reads --sc-p off the section, the same published value the
+     engine gives every act, so nothing here touches the engine. */
+  (function deck() {
+    var act = document.getElementById("md-deck-act"),
+        wrap = document.getElementById("md-deck");
+    if (!act || !wrap) return;
+    var cards = wrap.querySelectorAll(".md-card");
+    var n = cards.length;
+    if (!n) return;
+
+    /* Reduced motion keeps the CSS list; never mark it ready. */
+    if (reduce) return;
+    wrap.setAttribute("data-ready", "");
+
+    /* A beat of stillness at each end so the first card is readable
+       before anything moves and the last one is not still leaving as
+       the section does. */
+    /* Small, because these are dead scroll: nothing moves during them.
+       At 0.10 each it took most of a screen before the first card even
+       began to turn, and as long again after the last one settled. */
+    var LEAD = 0.02, TAIL = 0.02;
+
+    var last = -1;
+    function paint(p) {
+      var raw = clamp((p - LEAD) / (1 - LEAD - TAIL), 0, 1) * (n - 1);
+
+      /* Dwell. A straight linear sweep never lets a card sit still at the
+         centre, so nothing is readable — you are always mid-slide. Each
+         whole step now holds for its first and last quarter and does its
+         travelling in the middle half, so every card gets a beat facing
+         you before the next one takes over. */
+      var base = Math.floor(raw), frac = raw - base;
+      if (base >= n - 1) { base = n - 2; frac = 1; }
+      if (n < 2) { base = 0; frac = 0; }
+      /* Hold shortened from a quarter to a sixth of each step. The hold
+         is what makes a card readable, but at the very start and very
+         end it reads as the deck refusing to respond to the scroll. */
+      var w = clamp((frac - 0.16) / 0.68, 0, 1);
+      var t = (n < 2) ? 0 : base + w * w * (3 - 2 * w);
+
+      if (Math.abs(t - last) < 0.0015) return;
+      last = t;
+
+      /* Spacing follows the card, not a fixed pixel count, so the fan
+         stays in proportion on a phone as well as a monitor. */
+      var cw = cards[0].getBoundingClientRect().width || 320;
+      var SP = cw * 0.78;
+
+      for (var i = 0; i < n; i++) {
+        var pos = i - t;                       /* <0 left, >0 right */
+        var a = Math.abs(pos);
+        var k = Math.min(a, 2.4);              /* stop growing past the third */
+        var el = cards[i];
+
+        var x = pos * SP * (1 - k * 0.14);     /* neighbours crowd in slightly */
+        var sc = 1 - k * 0.15;
+        var rot = -clamp(pos, -1.8, 1.8) * 25; /* turned away from you */
+        var op = Math.max(0, 1 - k * 0.44);
+        var blur = a > 1.2 ? Math.min((a - 1.2) * 1.4, 2) : 0;
+
+        el.style.transform =
+          "translateX(calc(-50% + " + x.toFixed(1) + "px)) " +
+          "scale(" + sc.toFixed(3) + ") rotateY(" + rot.toFixed(1) + "deg)";
+        el.style.opacity = op.toFixed(3);
+        el.style.zIndex = String(100 - Math.round(a * 10));
+        el.style.filter = blur ? "blur(" + blur.toFixed(1) + "px)" : "none";
+        /* Only the card actually facing the reader takes clicks or is
+           announced; the rest are scenery until their turn. */
+        el.style.pointerEvents = a < 0.5 ? "auto" : "none";
+        el.setAttribute("aria-hidden", a < 0.5 ? "false" : "true");
+      }
+    }
+
+    function readP() {
+      var v = parseFloat(getComputedStyle(act).getPropertyValue("--sc-p"));
+      return isNaN(v) ? 0 : v;
+    }
+    (function tick() { requestAnimationFrame(tick); paint(readP()); })();
+  })();
+
+  /* ══ The proof figures count up ═══════════════════════════ */
+  (function counters() {
+    var els = document.querySelectorAll("[data-md-count]");
+    if (!els.length) return;
+    if (reduce || !("IntersectionObserver" in window)) return;
+    for (var i = 0; i < els.length; i++) els[i].textContent = "0";
+    function run(el) {
+      var to = parseInt(el.getAttribute("data-md-count"), 10) || 0;
+      var t0 = performance.now(), DUR = 1300;
+      (function step(now) {
+        var p = clamp((now - t0) / DUR, 0, 1);
+        var e = 1 - Math.pow(2, -10 * p);
+        el.textContent = String(Math.round(to * (p < 1 ? e : 1)));
+        if (p < 1) requestAnimationFrame(step); else el.textContent = String(to);
+      })(t0);
+    }
+    var io = new IntersectionObserver(function (es) {
+      for (var i = 0; i < es.length; i++) {
+        if (es[i].isIntersecting) { run(es[i].target); io.unobserve(es[i].target); }
+      }
+    }, { threshold: 0.6 });
+    for (var j = 0; j < els.length; j++) io.observe(els[j]);
+  })();
+
+  /* ══ Panels light where the pointer is ════════════════════ */
+  (function glow() {
+    if (reduce) return;
+    var panels = document.querySelectorAll("[data-md-glow]");
+    for (var i = 0; i < panels.length; i++) {
+      (function (el) {
+        el.addEventListener("pointermove", function (ev) {
+          var r = el.getBoundingClientRect();
+          el.style.setProperty("--mx", (ev.clientX - r.left).toFixed(0) + "px");
+          el.style.setProperty("--my", (ev.clientY - r.top).toFixed(0) + "px");
+          el.style.setProperty("--mo", "1");
+        }, { passive: true });
+        el.addEventListener("pointerleave", function () { el.style.setProperty("--mo", "0"); }, { passive: true });
+      })(panels[i]);
+    }
+  })();
+
+  /* ══ Section labels resolve out of noise ══════════════════
+     Only the section labels, not every small caption: the point
+     is a moment of craft, not a page that will not sit still. */
+  (function scramble() {
+    if (reduce || !("IntersectionObserver" in window)) return;
+    var POOL = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    function run(el) {
+      var final = el.textContent, n = final.length, t0 = performance.now(), DUR = 640;
+      (function step(now) {
+        var p = clamp((now - t0) / DUR, 0, 1);
+        var done = Math.floor(p * p * n);
+        var out = final.slice(0, done);
+        for (var i = done; i < n; i++) {
+          var c = final.charAt(i);
+          out += (c === " " ? " " : POOL.charAt((Math.random() * POOL.length) | 0));
+        }
+        el.textContent = out;
+        if (p < 1) requestAnimationFrame(step); else el.textContent = final;
+      })(t0);
+    }
+    var io = new IntersectionObserver(function (es) {
+      for (var i = 0; i < es.length; i++) {
+        if (es[i].isIntersecting) { run(es[i].target); io.unobserve(es[i].target); }
+      }
+    }, { threshold: 0.9 });
+    var labels = document.querySelectorAll(".md-label:not(.md-label--mute)");
+    for (var j = 0; j < labels.length; j++) io.observe(labels[j]);
+  })();
+
+  /* ══ Smooth in-page jumps ═════════════════════════════════ */
+  document.addEventListener("click", function (ev) {
+    var a = ev.target.closest && ev.target.closest('a[href^="#"]');
+    if (!a) return;
+    var id = a.getAttribute("href").slice(1);
+    if (!id) return;
+    var t = document.getElementById(id);
+    if (!t) return;
+    ev.preventDefault();
+    t.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  });
+
+  ScrollCraft.mount(document.body);
+})();
+</script>
+</body>
+</html>
